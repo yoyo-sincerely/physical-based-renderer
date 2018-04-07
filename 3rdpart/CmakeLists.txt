@@ -1,0 +1,7 @@
+add_subdirectory_ex(assimp)
+add_subdirectory_ex(rttr)
+add_subdirectory_ex(cereal)
+add_subdirectory_ex(stb)
+# add_subdirectory_ex(imgui)
+add_subdirectory_ex(glfw)
+# add_subdirectory_ex(gl3w)

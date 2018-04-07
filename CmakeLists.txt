@@ -1,0 +1,65 @@
+cmake_minimum_required(VERSION 3.0)
+
+project(AwesomeRenderer)
+
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
+
+include(macros)
+include(modules/sanitizers_support)
+include(modules/clang_tidy_support)
+include(modules/add_ide_support)
+
+detect_platform()
+print_info()
+set_output_paths()
+
+add_subdirectory_ex(3rdpart 3rd_build)
+# add_subdirectory_ex(src)
+
+SET(GL_LIB 
+# src/GL/gl3w.c
+# src/GL/gl3w.h
+# src/GL/glcorearb.h
+)
+
+# add_library(GL ${GL_LIB})
+
+add_executable(AwesomeRenderer
+src/imgui/stb_textedit.h
+src/imgui/stb_rect_pack.h
+src/imgui/stb_truetype.h
+
+src/imgui/imgui_internal.h
+src/imgui/imconfig.h
+src/imgui/imgui.cpp
+src/imgui/imgui.h
+src/imgui/imgui_draw.cpp
+src/imgui/imgui_demo.cpp
+src/imgui/imgui_user/imgui_user.cpp
+src/imgui/imgui_user/imgui_user.h
+src/imgui/imgui_user/imgui_tabs.cpp
+src/imgui/imgui_user/imgui_tabs.h
+src/imgui/imguizmo/imguizmo.cpp
+src/imgui/imguizmo/imguizmo.h
+
+src/GL/gl3w.c
+src/GL/gl3w.h
+src/GL/glcorearb.h
+src/imgui_impl_glfw_gl3.cpp
+src/imgui_impl_glfw_gl3.h
+src/main.cpp
+)
+
+# target_link_libraries(AwesomeRenderer imgui)
+# message(STATUS "glfw is = ${glfw}")
+target_link_libraries(AwesomeRenderer glfw)
+# message(STATUS "GL is = ${GL}")
+# target_link_libraries(AwesomeRenderer GL)
+# target_link_libraries(AwesomeRenderer gl3w)
+
+link_directories(${AwesomeRenderer_SOURCE_DIR})

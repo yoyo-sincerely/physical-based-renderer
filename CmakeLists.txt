@@ -40,8 +40,13 @@ src/imgui/imguizmo/imguizmo.cpp
 src/imgui/imguizmo/imguizmo.h
 )
 
+SET(mesh
+src/mesh/mesh_import.h
+)
+
 add_executable(AwesomeRenderer
 ${imgui}
+${mesh}
 src/GL/gl3w.c
 src/GL/gl3w.h
 src/GL/glcorearb.h

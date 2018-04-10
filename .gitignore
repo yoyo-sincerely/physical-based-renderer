@@ -37,6 +37,7 @@
 *.userosscache
 *.sln.docstates
 [Bb]uild/
+[Bb]uild64/
 [Bb]in/
 .vs/
 .vscode/
@@ -85,3 +86,4 @@ ipch/
 *.sap
 
 # User data
+data/

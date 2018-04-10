@@ -1,6 +1,6 @@
 # AwesomeRenderer
 
-run
+run cmd commond 
 
 ```
 git clone https://github.com/yoyo-sincerely/AwesomeRenderer.git

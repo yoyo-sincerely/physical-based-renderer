@@ -42,6 +42,7 @@ src/imgui/imguizmo/imguizmo.h
 
 SET(mesh
 src/mesh/mesh_import.h
+src/mesh/stb_image.h
 )
 
 SET(ray_tracing
@@ -68,6 +69,7 @@ ${imgui}
 ${mesh}
 ${ray_tracing}
 ${renderer}
+${GL}
 src/imgui_impl_glfw_gl3.cpp
 src/imgui_impl_glfw_gl3.h
 src/main.cpp

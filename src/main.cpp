@@ -5,9 +5,12 @@
 
 #include "imgui/imgui.h"
 #include "imgui_impl_glfw_gl3.h"
-#include <stdio.h>
 #include "GL/gl3w.h"
+#include "renderer/the_renderer.h"
+
+#include <stdio.h>
 #include <GLFW/glfw3.h>
+
 
 static void glfw_error_callback(int error, const char* description)
 {
@@ -29,11 +32,16 @@ int main(int, char**)
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
+
+#if __FULL_SCREEN__
 	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
 	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
     GLFWwindow* window = glfwCreateWindow(mode->width, mode->redBits, "Awesome Renderer", monitor, NULL);
+#else
+	GLFWwindow* window = glfwCreateWindow(1980, 960, "Awesome Renderer", NULL, NULL);
+#endif
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
@@ -67,6 +75,7 @@ int main(int, char**)
 
     bool show_demo_window = true;
     bool show_another_window = false;
+	bool show_renderer_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
@@ -99,22 +108,17 @@ int main(int, char**)
             ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
         }
 
-        // 2. Show another simple window. In most cases you will use an explicit Begin/End pair to name your windows.
-        if (show_another_window)
-        {
-            ImGui::Begin("Another Window", &show_another_window);
-            ImGui::Text("Hello from another window!");
-            if (ImGui::Button("Close Me"))
-                show_another_window = false;
-            ImGui::End();
-        }
-
         // 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
         if (show_demo_window)
         {
             ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
             ImGui::ShowDemoWindow(&show_demo_window);
         }
+
+		if (show_renderer_window) 
+		{
+			ShowRendererWindow(&show_renderer_window);
+		}
 
         // Rendering
         int display_w, display_h;

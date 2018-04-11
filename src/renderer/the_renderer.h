@@ -1,6 +1,6 @@
 #pragma once
 
-#include <GL/gl3w.h>    // This example is using gl3w to access OpenGL functions (because it is small). You may use glew/glad/glLoadGen/etc. whatever already works for you.
+#include "../GL/gl3w.h"
 #include <GLFW/glfw3.h>
 #ifdef _WIN32
 #undef APIENTRY
@@ -9,7 +9,7 @@
 #include <GLFW/glfw3native.h>
 #endif
 
-#include "imgui.h"
+#include "../imgui/imgui.h"
 #include <ctype.h>          // toupper, isprint
 #include <math.h>           // sqrtf, powf, cosf, sinf, floorf, ceilf
 #include <stdio.h>          // vsnprintf, sscanf, printf
@@ -19,10 +19,9 @@
 #else
 #include <stdint.h>         // intptr_t
 #endif
-#include "imgui.h"
-#include "../../libs/stb_image/stb_image.h"		//loading image
-#include "examples\opengl3_example\RayTracing\RayTracer.h"
-#include "examples\opengl3_example\logger.h"
+#include "../mesh/stb_image.h"		//loading image
+#include "../ray_tracing/RayTracer.h"
+#include "../logger.h"
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4996) // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen
@@ -66,16 +65,6 @@
 
 #if !defined(IMGUI_DISABLE_RENDERER_WINDOWS)
 
-Scene scene;
-RayTracer* tracer = nullptr;
-
-
-static bool						g_ShowLogger = true;
-static bool						g_IsLoadImage = false;
-static GLuint					g_FontTexture = 0;
-static ImVector<ImFontAtlas *>	g_Image;
-static bool						g_ShowImage = false;
-
 void Render();
 static void ShowLogger(bool* p_open);
 static void LoadingImageRGB(ImFontAtlas * texImAtlas);
@@ -85,6 +74,7 @@ static void ShowImage();
 //static void ShowImage(ImTextureID);
 static void RenderTest();
 static void RenderBITMAP();
+void ShowRendererWindow(bool * p_open);
 static void ShowMenuFile();
 
 #else

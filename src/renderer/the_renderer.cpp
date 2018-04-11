@@ -13,8 +13,17 @@
 
 #if !defined(IMGUI_DISABLE_RENDERER_WINDOWS)
 
+Scene scene;
+RayTracer* tracer = nullptr;
+ExampleAppLog			g_Logger;
 
-void ImGui::ShowRendererWindow(bool* p_open)
+static bool						g_ShowLogger = true;
+static bool						g_IsLoadImage = false;
+static GLuint					g_FontTexture = 0;
+static ImVector<ImFontAtlas *>	g_Image;
+static bool						g_ShowImage = false;
+
+void ShowRendererWindow(bool* p_open)
 {
 
 	static bool show_app_main_menu_bar = true;

@@ -10,5 +10,13 @@ git submodule update
 
 mkdir build
 cd build
+```
+in win32, run:
+```
 cmake ..
+```
+
+in win64, run:
+```
+cmake -G "Visual Studio 15 2017 Win64" ..
 ```

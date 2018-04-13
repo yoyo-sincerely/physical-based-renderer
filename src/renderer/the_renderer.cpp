@@ -21,7 +21,7 @@ static bool						g_ShowLogger = true;
 static bool						g_IsLoadImage = false;
 static GLuint					g_FontTexture = 0;
 static ImVector<ImFontAtlas *>	g_Image;
-static bool						g_ShowImage = false;
+static bool						g_ShowImage = true;
 
 void ShowRendererWindow(bool* p_open)
 {
@@ -99,15 +99,22 @@ static void RenderTest()
 			double r = 1;
 			double g = 0;
 			double b = 0;
-			*prt = ((255 & 0xFF) << 24) | //alpha
+			*prt = ((4 & 0xFF) << 24) | //alpha
 				(((int)(b * 255) & 0xFF) << 16) | //blue
 				(((int)(g * 255) & 0xFF) << 8) | //green
 				(((int)(r * 255) & 0xFF) << 0); //red
+			g_Logger.AddLog("prt size is : %d\t value is : %d \t%d\t%d\n", sizeof(*prt), *prt, i, j);
 		}
 	}
 
+	g_Logger.AddLog("show data size : \n %d \n",sizeof(testBuffer->TexPixelsRGBA32)/ sizeof(*testBuffer->TexPixelsRGBA32));
+	for (int i = 0; i < sizeof(testBuffer->TexPixelsRGBA32)/ sizeof(*testBuffer->TexPixelsRGBA32); i++)
+	{
+		g_Logger.AddLog("%d", *(testBuffer->TexPixelsRGBA32 + i));
+	}
 	LoadingImageRGBA(testBuffer);
 }
+
 static void RenderBITMAP()
 {
 

@@ -49,8 +49,8 @@ void ShowRendererWindow(bool* p_open)
 	ImGui::SetNextWindowSize(ImVec2(800, 800), ImGuiCond_FirstUseEver);
 	ImVec2 size =  ImGui::GetWindowSize();
 	ImVec2 pos = ImGui::GetWindowPos();
-	//g_Logger.AddLog("size is :: %lf \t %lf \n", size.x, size.y);
-	//g_Logger.AddLog("pos is :: %lf \t %lf \n", pos.x, pos.y);
+	g_Logger.AddLog("size is :: %lf \t %lf \n", size.x, size.y);
+	g_Logger.AddLog("pos is :: %lf \t %lf \n", pos.x, pos.y);
 
 	ImGui::SetWindowPos(pos, ImGuiCond_Always);
 
@@ -89,6 +89,15 @@ static void ShowMenuFile()
 	}
 	if (ImGui::MenuItem("render test"))		RenderTest();
 	if (ImGui::MenuItem("render"))		Render();
+	if (ImGui::MenuItem("ray tracing in weekend")) raytracing();
+}
+
+static void raytracing()
+{	ImFontAtlas * testBuffer = new ImFontAtlas;
+	testBuffer->TexWidth = 100;
+	testBuffer->TexHeight = 100;
+
+	testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight + 1);
 }
 
 static void RenderTest()
@@ -117,11 +126,6 @@ static void RenderTest()
 		}
 	}
 	LoadingImageRGBA(testBuffer);
-}
-
-static void RenderBITMAP()
-{
-
 }
 
 //test render

@@ -73,10 +73,10 @@ static void LoadingImage(const char * imagePath);
 static void ShowImage();
 //static void ShowImage(ImTextureID);
 static void RenderTest();
-static void RenderBITMAP();
 void ShowRendererWindow(bool * p_open);
 static void ShowMenuFile();
 
+static void raytracing();
 #else
 
 #endif

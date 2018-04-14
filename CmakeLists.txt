@@ -64,6 +64,11 @@ src/renderer/the_renderer.h
 src/renderer/the_renderer.cpp
 )
 
+SET(ray_tracing_in_one_weekend
+src/ray_tracing_in_one_weekend
+)
+
+
 add_executable(AwesomeRenderer
 ${imgui}
 ${mesh}

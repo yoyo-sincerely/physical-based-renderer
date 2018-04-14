@@ -49,8 +49,8 @@ void ShowRendererWindow(bool* p_open)
 	ImGui::SetNextWindowSize(ImVec2(800, 800), ImGuiCond_FirstUseEver);
 	ImVec2 size =  ImGui::GetWindowSize();
 	ImVec2 pos = ImGui::GetWindowPos();
-	g_Logger.AddLog("size is :: %lf \t %lf \n", size.x, size.y);
-	g_Logger.AddLog("pos is :: %lf \t %lf \n", pos.x, pos.y);
+	//g_Logger.AddLog("size is :: %lf \t %lf \n", size.x, size.y);
+	//g_Logger.AddLog("pos is :: %lf \t %lf \n", pos.x, pos.y);
 
 	ImGui::SetWindowPos(pos, ImGuiCond_Always);
 
@@ -97,27 +97,24 @@ static void RenderTest()
 	testBuffer->TexWidth = 100;
 	testBuffer->TexHeight = 100;
 
-	testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight);
+	testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight + 1);
 	for (int i = 0; i < testBuffer->TexHeight; i++)
 	{
-		auto prt = (unsigned int *)((char *)testBuffer->TexPixelsRGBA32 + i * sizeof(testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth);
+		auto prt = (unsigned int *)((char *)testBuffer->TexPixelsRGBA32 + i * sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth);
+		//g_Logger.AddLog("sizeof prt is : %d", sizeof(*prt));
+		g_Logger.AddLog("texPixelrgba size is : %d\n", sizeof(*testBuffer->TexPixelsRGBA32));
 		for (int j = 0; j < testBuffer->TexWidth; j++ , prt++)
 		{
 			double r = 1;
 			double g = 0;
 			double b = 0;
-			*prt = ((4 & 0xFF) << 24) | //alpha
-				(((int)(b * 255) & 0xFF) << 16) | //blue
-				(((int)(g * 255) & 0xFF) << 8) | //green
-				(((int)(r * 255) & 0xFF) << 0); //red
-			g_Logger.AddLog("prt size is : %d\t value is : %d \t%d\t%d\n", sizeof(*prt), *prt, i, j);
+			*prt = ((255 & 255) << 24) | //alpha
+				(((int)(b * 255) & 255) << 16) | //blue
+				(((int)(g * 255) & 255) << 8) | //green
+				(((int)(r * 255) & 255) << 0); //red
+			//g_Logger.AddLog("prt size is : %d\t value is : %d \t%d\t%d\n", sizeof(*prt), *prt, i, j);
+			//g_Logger.AddLog("rgb is : %d %d %d \n", (((int)(r * 255) & 0xFF) << 0), (((int)(g * 255) & 0xFF) << 8), (((int)(b * 255) & 0xFF) << 16));
 		}
-	}
-
-	g_Logger.AddLog("show data size : \n %d \n",sizeof(testBuffer->TexPixelsRGBA32)/ sizeof(*testBuffer->TexPixelsRGBA32));
-	for (int i = 0; i < sizeof(testBuffer->TexPixelsRGBA32)/ sizeof(*testBuffer->TexPixelsRGBA32); i++)
-	{
-		g_Logger.AddLog("%d", *(testBuffer->TexPixelsRGBA32 + i));
 	}
 	LoadingImageRGBA(testBuffer);
 }
@@ -136,11 +133,11 @@ static void Render()
 	ImFontAtlas * buffer = new ImFontAtlas;
 	buffer->TexWidth = 800;
 	buffer->TexHeight = 600;
-	buffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(buffer->TexPixelsRGBA32) * buffer->TexWidth * buffer->TexHeight);
+	buffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*buffer->TexPixelsRGBA32) * buffer->TexWidth * buffer->TexHeight);
 	//memset(buffer->TexPixelsRGBA32, 0, sizeof(buffer->TexPixelsRGBA32) * buffer->TexWidth * buffer->TexHeight);
 	//g_Logger.AddLog("TexPixelsRGBA32 is %d \n", sizeof(buffer->TexPixelsRGBA32));
 
-	tracer->Render(buffer->TexPixelsRGBA32, buffer->TexWidth, buffer->TexHeight, sizeof(buffer->TexPixelsRGBA32) * buffer->TexWidth, 5);
+	tracer->Render(buffer->TexPixelsRGBA32, buffer->TexWidth, buffer->TexHeight, sizeof(*buffer->TexPixelsRGBA32) * buffer->TexWidth, 5);
 
 	LoadingImageRGBA(buffer);
 }
@@ -165,8 +162,8 @@ static void LoadingImage(const char * imagePath)
 
 static void LoadingImageRGBA(ImFontAtlas * texImAtlas)
 {
-	if (texImAtlas->TexPixelsRGBA32 == NULL)
-	{
+	if (texImAtlas->TexPixelsRGBA32 == NULL && texImAtlas->TexPixelsAlpha8 == NULL) {
+		g_Logger.AddLog("data is NULL");
 		return;
 	}
 
@@ -179,7 +176,10 @@ static void LoadingImageRGBA(ImFontAtlas * texImAtlas)
 	glBindTexture(GL_TEXTURE_2D, g_FontTexture);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texImAtlas->TexWidth, texImAtlas->TexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texImAtlas->TexPixelsRGBA32);
+	if (texImAtlas->TexPixelsAlpha8 != NULL)
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texImAtlas->TexWidth, texImAtlas->TexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texImAtlas->TexPixelsAlpha8);
+	else
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texImAtlas->TexWidth, texImAtlas->TexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texImAtlas->TexPixelsRGBA32); 
 
 	// Store our identifier
 	g_Logger.AddLog("texture id %d\n", g_FontTexture);
@@ -229,7 +229,7 @@ static void ShowImage()
 
 	if (tex != NULL) {
 		ImGui::Image(tex->TexID, ImVec2((float)tex->TexWidth, (float)tex->TexHeight));
-		g_Logger.AddLog("the texID is  %d  ", tex->TexID);
+		//g_Logger.AddLog("the texID is  %d  ", tex->TexID);
 	}else {
 		g_Logger.AddLog("tex is NULL!!! \n");
 	}

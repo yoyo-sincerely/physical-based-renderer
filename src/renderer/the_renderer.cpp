@@ -46,7 +46,7 @@ void ShowRendererWindow(bool* p_open)
 	if (no_collapse)  window_flags |= ImGuiWindowFlags_NoCollapse;
 	if (no_close) p_open = NULL;
 	
-	ImGui::SetNextWindowSize(ImVec2(550, 680), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(800, 800), ImGuiCond_Always);
 	if (!ImGui::Begin("The Renderer", p_open, window_flags))
 	{
 		// Early out if the window is collapsed, as an optimization.

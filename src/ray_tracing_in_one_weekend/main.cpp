@@ -1,4 +1,15 @@
-#include "ray_tracing.h"
+#include <iostream>
+#include <limits>
+#include <float.h>
+#include "rand.hpp"
+#include "vec3.hpp"
+#include "ray.hpp"
+#include "material.hpp"
+#include "sphere.hpp"
+#include "hitable_list.hpp"
+#include "camera.hpp"
+
+#define MAXFLOAT LDBL_MAX
 
 vec3 color_ray(const ray& r, hitable *world, int depth) {
   const vec3 white = vec3(1.0, 1.0, 1.0);
@@ -21,11 +32,11 @@ vec3 color_ray(const ray& r, hitable *world, int depth) {
   }
 }
 
-void ray_tracing(void* buffer, int width, int height, int stride, int maxdepth, int seed){
-	//std::cout << width << "\t" << height << "\t" << stride << "\t" << maxdepth << "\t" << std::endl;
-  int nx = width;
-  int ny = height;
-  int ns = seed;
+int main() {
+  int nx = 400;
+  int ny = 200;
+  int ns = 32;
+  std::cout << "P3\n" << nx << " " << ny << "\n255\n";
 
   hitable *list[4];
   list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
@@ -35,31 +46,28 @@ void ray_tracing(void* buffer, int width, int height, int stride, int maxdepth, 
   hitable *world = new hitable_list(list, 4);
   camera cam;
 
-  for (int j = 0; j < ny; j++) {
-	  auto prt = (unsigned int *)((char *)buffer + (ny - j -1) * stride);
-    for (int i = 0; i < nx; i++, prt++) {
+  for (int j = ny-1; j >= 0; j--) {
+    for (int i = 0; i < nx; i++) {
       vec3 color(0, 0, 0);
       for (int s = 0; s < ns; s++) {
         float u = float(i + drand48()) / float(nx);
         float v = float(j + drand48()) / float(ny);
         ray r = cam.get_ray(u, v);
-		//std::cout << u << "    " << v << std:: endl;
-		//std::cout << r.origin().x()<<"   "<< r.origin().y()<<"   "<< r.origin().z()<<"   "<< r.direction().x()<<"   "<< r.direction().y()<<"   "<< r.direction().z()<<"   "<<std::endl;
         color += color_ray(r, world, 0);
       }
       color /= float(ns);
       // Gamma correct with gamma = 2
       color = vec3(sqrt(color.r()), sqrt(color.g()), sqrt(color.b()));
-	  //int ir = int(255.99*color.r());
-      //int ig = int(255.99*color.g());
-      //int ib = int(255.99*color.b());
-	  //vec3 c = vec3(1.0, 0.0, 0.0);
-	  *prt = ((255 & 255) << 24) | //alpha
-				(((int)(color.b() * 255) & 255) << 16) | //blue
-				(((int)(color.g() * 255) & 255) << 8) | //green
-				(((int)(color.r() * 255) & 255) << 0); //red
-      //std::cout << color.r()<< " " <<  color.g()<< " " <<  color.b()<< "\n";
-	  //std::cout << *prt << std::endl;
+      // I believe 255.99 is used instead of 255 since we're using the `int` constructor on floats, so we'll truncate the results
+      //     0 <= r <= 1
+      // =>  0 <= 255.99 * r <= 255.99
+      // =>  0 <= int(255.99 * r) <= 255
+      // It's a nasty way of rounding really, biasing towards rounding down.
+      int ir = int(255.99*color.r());
+      int ig = int(255.99*color.g());
+      int ib = int(255.99*color.b());
+      std::cout << ir << " " << ig << " " << ib << "\n";
     }
   }
+  return 0;
 }

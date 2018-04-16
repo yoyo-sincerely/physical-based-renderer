@@ -62,7 +62,7 @@ void ShowRendererWindow(bool* p_open)
 	}
 	ImGui::PushItemWidth(-140);                                 // Right align, keep 140 pixels for labels
 
-	ImGui::Text("the renderer. ImGui version is (%s)", IMGUI_VERSION);
+	//ImGui::Text("the renderer. ImGui version is (%s)", IMGUI_VERSION);
 
 	// Menu
 	if (ImGui::BeginMenuBar())
@@ -105,34 +105,32 @@ static void ShowMenuFile()
 static void ShowLastImage() 
 {
 	g_Image_Index--;
-	if (g_Image_Index < 0) g_Image_Index = 0;
+	g_Image_Index += g_Image.size(); 
+	g_Image_Index %= g_Image.size(); 
 }
 
 static void ShowNextImage()
 {
 	g_Image_Index++;
-	if (g_Image_Index >= g_Image.size()) g_Image_Index = g_Image.size()-1 >= 0 ? g_Image.size()-1 : 0;
+	g_Image_Index %= g_Image.size();
 }
 
 static void raytracing()
 {	ImFontAtlas * testBuffer = new ImFontAtlas;
-	testBuffer->TexWidth = 100;
-	testBuffer->TexHeight = 100;
+	testBuffer->TexWidth = 400;
+	testBuffer->TexHeight = 400;
 
 	testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight + 1);
-	for (int i = 0; i < testBuffer->TexHeight; i++)
+
+	ray_tracing(testBuffer->TexPixelsRGBA32, testBuffer->TexWidth, testBuffer->TexHeight, sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth, 5, 32);
+	for (int i = 0; i < testBuffer->TexWidth * testBuffer->TexHeight; i++)
 	{
-		auto prt = (unsigned int *)((char *)testBuffer->TexPixelsRGBA32 + i * sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth);
-		for (int j = 0; j < testBuffer->TexWidth; j++ , prt++)
-		{
-			double r = (float) i / (float)testBuffer->TexHeight;
-			double g = (float) j / (float)testBuffer->TexWidth;
-			double b = 0.2;
-			*prt = ((255 & 255) << 24) | //alpha
-				(((int)(b * 255) & 255) << 16) | //blue
-				(((int)(g * 255) & 255) << 8) | //green
-				(((int)(r * 255) & 255) << 0); //red
-		}
+		unsigned int color = testBuffer->TexPixelsRGBA32[i];
+		int r = color % 256;
+		int g = color / 256 % 256;
+		int b = color / (256 * 256) % 256;
+		int a = color / (256 * 256 * 256) % 256;
+		//g_Logger.AddLog("r : %d, g : %d, b : %d, a : %d, i : %d \n", r, g, b, a, i);
 	}
 	LoadingImageRGBA(testBuffer);
 }
@@ -268,7 +266,7 @@ static void ShowImage()
 {
 	if (g_Image.empty()) return;
 	if (g_FontTexture == NULL) return;
-	g_Logger.AddLog("g_Image_Index is : %d\n", g_Image_Index);
+	//g_Logger.AddLog("g_Image_Index is : %d\n", g_Image_Index);
 	if (g_Image_Index < 0 || g_Image_Index >= g_Image.size())
 	{
 		g_Logger.AddLog("g_Image_Index is NULL !!!");

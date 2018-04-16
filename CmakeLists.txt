@@ -67,6 +67,15 @@ src/renderer/the_renderer.cpp
 SET(ray_tracing_in_one_weekend
 src/ray_tracing_in_one_weekend/ray_tracing.h
 src/ray_tracing_in_one_weekend/ray_tracing.cpp
+src/ray_tracing_in_one_weekend/camera.hpp
+src/ray_tracing_in_one_weekend/hitable_list.hpp
+src/ray_tracing_in_one_weekend/hitable.hpp
+src/ray_tracing_in_one_weekend/material.hpp
+src/ray_tracing_in_one_weekend/ray.hpp
+src/ray_tracing_in_one_weekend/sphere.hpp
+src/ray_tracing_in_one_weekend/vec3.hpp
+src/ray_tracing_in_one_weekend/rand.hpp
+# main.cpp
 )
 
 

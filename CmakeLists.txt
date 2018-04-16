@@ -65,7 +65,8 @@ src/renderer/the_renderer.cpp
 )
 
 SET(ray_tracing_in_one_weekend
-src/ray_tracing_in_one_weekend
+src/ray_tracing_in_one_weekend/ray_tracing.h
+src/ray_tracing_in_one_weekend/ray_tracing.cpp
 )
 
 
@@ -75,6 +76,7 @@ ${mesh}
 ${ray_tracing}
 ${renderer}
 ${GL}
+${ray_tracing_in_one_weekend}
 src/imgui_impl_glfw_gl3.cpp
 src/imgui_impl_glfw_gl3.h
 src/main.cpp

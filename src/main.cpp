@@ -74,8 +74,8 @@ int main(int, char**)
     //IM_ASSERT(font != NULL);
 
     bool show_demo_window = false;
-    bool show_another_window = false;
 	bool show_renderer_window = true;
+	bool show_inspector_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
@@ -110,6 +110,7 @@ int main(int, char**)
 				{
 					ImGui::MenuItem("Demo", NULL, &show_demo_window);
 					ImGui::MenuItem("Renderer", NULL, &show_renderer_window);
+					ImGui::MenuItem("Attribute", NULL, &show_inspector_window);
 					ImGui::EndMenu();
 				}
 				ImGui::EndMainMenuBar();

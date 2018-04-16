@@ -22,6 +22,7 @@
 #include "../mesh/stb_image.h"		//loading image
 #include "../ray_tracing/RayTracer.h"
 #include "../logger.h"
+#include "../ray_tracing_in_one_weekend/ray_tracing.h"
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4996) // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen
@@ -75,6 +76,10 @@ static void ShowImage();
 static void RenderTest();
 void ShowRendererWindow(bool * p_open);
 static void ShowMenuFile();
+
+static void ShowLastImage();
+
+static void ShowNextImage();
 
 static void raytracing();
 #else

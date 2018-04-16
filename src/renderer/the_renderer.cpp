@@ -13,15 +13,15 @@
 
 #if !defined(IMGUI_DISABLE_RENDERER_WINDOWS)
 
-Scene scene;
-RayTracer* tracer = nullptr;
-ExampleAppLog			g_Logger;
-
+Scene							scene;
+RayTracer*						tracer = nullptr;
+ExampleAppLog					g_Logger;
 static bool						g_ShowLogger = true;
 static bool						g_IsLoadImage = false;
 static GLuint					g_FontTexture = 0;
 static ImVector<ImFontAtlas *>	g_Image;
 static bool						g_ShowImage = true;
+unsigned int					g_Image_Index = 0;
 
 void ShowRendererWindow(bool* p_open)
 {
@@ -49,8 +49,8 @@ void ShowRendererWindow(bool* p_open)
 	ImGui::SetNextWindowSize(ImVec2(800, 800), ImGuiCond_FirstUseEver);
 	ImVec2 size =  ImGui::GetWindowSize();
 	ImVec2 pos = ImGui::GetWindowPos();
-	g_Logger.AddLog("size is :: %lf \t %lf \n", size.x, size.y);
-	g_Logger.AddLog("pos is :: %lf \t %lf \n", pos.x, pos.y);
+	//g_Logger.AddLog("size is :: %lf \t %lf \n", size.x, size.y);
+	//g_Logger.AddLog("pos is :: %lf \t %lf \n", pos.x, pos.y);
 
 	ImGui::SetWindowPos(pos, ImGuiCond_Always);
 
@@ -75,6 +75,16 @@ void ShowRendererWindow(bool* p_open)
 		ImGui::EndMenuBar();
 	}
 
+	if (ImGui::Button("last image"))
+	{
+		ShowLastImage();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("next image"))
+	{
+		ShowNextImage();
+	}
+
 	if (g_ShowLogger) ShowLogger(&g_ShowLogger);
 	if (g_ShowImage) ShowImage();
 	ImGui::End();
@@ -92,12 +102,39 @@ static void ShowMenuFile()
 	if (ImGui::MenuItem("ray tracing in weekend")) raytracing();
 }
 
+static void ShowLastImage() 
+{
+	g_Image_Index--;
+	if (g_Image_Index < 0) g_Image_Index = 0;
+}
+
+static void ShowNextImage()
+{
+	g_Image_Index++;
+	if (g_Image_Index >= g_Image.size()) g_Image_Index = g_Image.size()-1 >= 0 ? g_Image.size()-1 : 0;
+}
+
 static void raytracing()
 {	ImFontAtlas * testBuffer = new ImFontAtlas;
 	testBuffer->TexWidth = 100;
 	testBuffer->TexHeight = 100;
 
 	testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight + 1);
+	for (int i = 0; i < testBuffer->TexHeight; i++)
+	{
+		auto prt = (unsigned int *)((char *)testBuffer->TexPixelsRGBA32 + i * sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth);
+		for (int j = 0; j < testBuffer->TexWidth; j++ , prt++)
+		{
+			double r = (float) i / (float)testBuffer->TexHeight;
+			double g = (float) j / (float)testBuffer->TexWidth;
+			double b = 0.2;
+			*prt = ((255 & 255) << 24) | //alpha
+				(((int)(b * 255) & 255) << 16) | //blue
+				(((int)(g * 255) & 255) << 8) | //green
+				(((int)(r * 255) & 255) << 0); //red
+		}
+	}
+	LoadingImageRGBA(testBuffer);
 }
 
 static void RenderTest()
@@ -186,9 +223,10 @@ static void LoadingImageRGBA(ImFontAtlas * texImAtlas)
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texImAtlas->TexWidth, texImAtlas->TexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texImAtlas->TexPixelsRGBA32); 
 
 	// Store our identifier
-	g_Logger.AddLog("texture id %d\n", g_FontTexture);
+	//g_Logger.AddLog("texture id %d\n", g_FontTexture);
 	texImAtlas->TexID = (void *)(intptr_t)g_FontTexture;
 	g_Image.push_back(texImAtlas);
+	g_Image_Index = g_Image.size() - 1;
 
 	// Restore state
 	glBindTexture(GL_TEXTURE_2D, last_texture);
@@ -216,11 +254,12 @@ static void LoadingImageRGB(ImFontAtlas * texImAtlas)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texImAtlas->TexWidth, texImAtlas->TexHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, texImAtlas->TexPixelsAlpha8);
 
 	// Store our identifier
-	g_Logger.AddLog("texture id %d\n", g_FontTexture);
+	//g_Logger.AddLog("texture id %d\n", g_FontTexture);
 	texImAtlas->TexID = (void *)(intptr_t)g_FontTexture;
 	g_Image.push_back(texImAtlas);
+	g_Image_Index = g_Image.size() - 1;
 
-	g_Logger.AddLog("g_Image's length is : %d ", g_Image.size());
+	//g_Logger.AddLog("g_Image's length is : %d ", g_Image.size());
 	// Restore state
 	glBindTexture(GL_TEXTURE_2D, last_texture);
 }
@@ -229,8 +268,14 @@ static void ShowImage()
 {
 	if (g_Image.empty()) return;
 	if (g_FontTexture == NULL) return;
-	ImFontAtlas *tex = g_Image.back();
+	g_Logger.AddLog("g_Image_Index is : %d\n", g_Image_Index);
+	if (g_Image_Index < 0 || g_Image_Index >= g_Image.size())
+	{
+		g_Logger.AddLog("g_Image_Index is NULL !!!");
+		g_Image_Index = g_Image.size() - 1;
+	}
 
+	ImFontAtlas * tex = g_Image[g_Image_Index];
 	if (tex != NULL) {
 		ImGui::Image(tex->TexID, ImVec2((float)tex->TexWidth, (float)tex->TexHeight));
 		//g_Logger.AddLog("the texID is  %d  ", tex->TexID);

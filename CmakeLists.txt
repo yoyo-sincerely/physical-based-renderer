@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 3.0)
 
 project(AwesomeRenderer)
 
+option(GLFW_BUILD_DOCS OFF)
+option(GLFW_BUILD_EXAMPLES OFF)
+option(GLFW_BUILD_TESTS OFF)
+
+option(ASSIMP_BUILD_ASSIMP_TOOLS OFF)
+option(ASSIMP_BUILD_SAMPLES OFF)
+option(ASSIMP_BUILD_TESTS OFF)
+
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -78,6 +86,7 @@ src/ray_tracing_in_one_weekend/rand.hpp
 # main.cpp
 )
 
+# add_library(ray_tracing_in_one_weekend)
 
 add_executable(AwesomeRenderer
 ${imgui}
@@ -93,5 +102,5 @@ src/main.cpp
 
 target_link_libraries(AwesomeRenderer glfw)
 target_link_libraries(AwesomeRenderer assimp)
-
+# target_link_libraries(AwesomeRenderer ray_tracing_in_one_weekend)
 link_directories(${AwesomeRenderer_SOURCE_DIR})

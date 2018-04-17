@@ -192,3 +192,8 @@ void SetDefaultScene(Scene* scene)
 	scene->Camera = { Vector(6, 3, 0), Vector() };
 	scene->Ambient = Color::Black;
 }
+
+void SetNewScene(Scene * scene)
+{
+	Plane* p = new Plane();
+}

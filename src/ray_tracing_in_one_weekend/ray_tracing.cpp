@@ -21,17 +21,32 @@ vec3 color_ray(const ray& r, hitable *world, int depth) {
   }
 }
 
+hitable* random_scene(int n)
+{
+	n = 500;
+	hitable ** random_list = new hitable*[n+ 1];
+	
+	random_list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5, 0.5, 0.5)));
+	int i = 1;
+}
+
+hitable * default_scene() 
+{
+	hitable *list[4];
+	list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
+	list[1] = new sphere(vec3(0, -100.5f, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
+	list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.1));
+	list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.8, 0.8), 0.7));
+}
+
 void ray_tracing(void* buffer, int width, int height, int stride, int maxdepth, int seed){
 	//std::cout << width << "\t" << height << "\t" << stride << "\t" << maxdepth << "\t" << std::endl;
   int nx = width;
   int ny = height;
   int ns = seed;
 
-  hitable *list[4];
-  list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
-  list[1] = new sphere(vec3(0, -100.5f, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
-  list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.1));
-  list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.8, 0.8), 0.7));
+    //hitable * list = random_scene();
+  hitable * list = default_scene();
   hitable *world = new hitable_list(list, 4);
   camera cam;
 

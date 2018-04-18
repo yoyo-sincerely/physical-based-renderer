@@ -26,67 +26,40 @@ detect_platform()
 print_info()
 set_output_paths()
 
-add_subdirectory_ex(3rdpart 3rd_build)
-# add_subdirectory_ex(src)
+add_subdirectory_ex(3rdpart)
 
-SET(imgui
-src/imgui/stb_textedit.h
-src/imgui/stb_rect_pack.h
-src/imgui/stb_truetype.h
+include_directories(3rdpart/glad/include)
 
-src/imgui/imgui_internal.h
-src/imgui/imconfig.h
-src/imgui/imgui.cpp
-src/imgui/imgui.h
-src/imgui/imgui_draw.cpp
-src/imgui/imgui_demo.cpp
-src/imgui/imgui_user/imgui_user.cpp
-src/imgui/imgui_user/imgui_user.h
-src/imgui/imgui_user/imgui_tabs.cpp
-src/imgui/imgui_user/imgui_tabs.h
-src/imgui/imguizmo/imguizmo.cpp
-src/imgui/imguizmo/imguizmo.h
+FILE(GLOB imgui
+src/imgui/*.h
+src/imgui/*.cpp
 )
 
-SET(mesh
-src/mesh/mesh_import.h
-src/mesh/stb_image.h
+FILE(GLOB mesh
+src/mesh/*.h
 )
 
-SET(ray_tracing
-src/ray_tracing/Color.h
-src/ray_tracing/Math.h
-src/ray_tracing/RayTracer.cpp
-src/ray_tracing/RayTracer.h
-src/ray_tracing/Vector.h
+FILE(GLOB ray_tracing
+src/ray_tracing/*.h
+src/ray_tracing/*.cpp
 )
 
-SET(GL 
-src/GL/gl3w.c
-src/GL/gl3w.h
-src/GL/glcorearb.h
-)
+# SET(GL 
+# FILE(GLOB GL
+# src/GL/*.c
+# src/GL/*.h
+# )
 
 SET(renderer
 src/renderer/the_renderer.h
 src/renderer/the_renderer.cpp
 )
 
-SET(ray_tracing_in_one_weekend
-src/ray_tracing_in_one_weekend/ray_tracing.h
-src/ray_tracing_in_one_weekend/ray_tracing.cpp
-src/ray_tracing_in_one_weekend/camera.hpp
-src/ray_tracing_in_one_weekend/hitable_list.hpp
-src/ray_tracing_in_one_weekend/hitable.hpp
-src/ray_tracing_in_one_weekend/material.hpp
-src/ray_tracing_in_one_weekend/ray.hpp
-src/ray_tracing_in_one_weekend/sphere.hpp
-src/ray_tracing_in_one_weekend/vec3.hpp
-src/ray_tracing_in_one_weekend/rand.hpp
-# main.cpp
+FILE(GLOB ray_tracing_in_one_weekend
+src/ray_tracing_in_one_weekend/*.h
+src/ray_tracing_in_one_weekend/*.cpp
+src/ray_tracing_in_one_weekend/*.hpp
 )
-
-# add_library(ray_tracing_in_one_weekend)
 
 add_executable(AwesomeRenderer
 ${imgui}
@@ -95,6 +68,7 @@ ${ray_tracing}
 ${renderer}
 ${GL}
 ${ray_tracing_in_one_weekend}
+3rdpart/glad/src/glad.c
 src/imgui_impl_glfw_gl3.cpp
 src/imgui_impl_glfw_gl3.h
 src/main.cpp
@@ -102,5 +76,5 @@ src/main.cpp
 
 target_link_libraries(AwesomeRenderer glfw)
 target_link_libraries(AwesomeRenderer assimp)
-# target_link_libraries(AwesomeRenderer ray_tracing_in_one_weekend)
+
 link_directories(${AwesomeRenderer_SOURCE_DIR})

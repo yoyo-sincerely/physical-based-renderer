@@ -88,3 +88,4 @@ ipch/
 # User data
 data/
 log/
+3rdpart/pbrt-v3

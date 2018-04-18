@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../GL/gl3w.h"
+#include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #ifdef _WIN32
 #undef APIENTRY

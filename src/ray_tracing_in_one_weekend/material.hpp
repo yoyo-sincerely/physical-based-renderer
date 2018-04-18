@@ -7,7 +7,11 @@
 #include "rand.hpp"
 
 vec3 random_in_unit_sphere();
+bool refract(const vec3 &v, const vec3 &n, float ni_over_nt, vec3 &refracted);
+float schlick(float cosine, float ref_idx);
 vec3 reflect (const vec3& v, const vec3& normal);
+
+
 
 class material {
 public:
@@ -51,6 +55,54 @@ private:
 };
 
 
+class dielectric : public material
+{
+public:
+	float ref_idx;
+
+	dielectric(float ri):ref_idx(ri){}
+	virtual bool scatter(const ray& r_in, const hit_record& record, vec3& attenuation, ray& scattered)const {
+		vec3 outward_normal;
+		vec3 reflected = reflect(r_in.direction(), record.normal);
+		float ni_over_nt;
+		attenuation = vec3(0.0, 0.0, 0.0);
+		vec3 refracted;
+		float reflet_prob, cosine;
+		if (dot(r_in.direction(), record.normal) > 0)
+		{
+			outward_normal = -record.normal;
+			ni_over_nt = ref_idx;
+			cosine = ref_idx * dot(r_in.direction(), record.normal / r_in.direction().length());
+		}
+		else
+		{
+			outward_normal = record.normal;
+			ni_over_nt = 1.0 / ref_idx;
+			cosine = -dot(r_in.direction(),record.normal) / r_in.direction().length();
+		}
+
+		if (refract(r_in.direction(), outward_normal, ni_over_nt, refracted))
+		{
+			reflet_prob = schlick(cosine, ref_idx);
+		}
+		else
+		{
+			scattered = ray(record.p, reflected);
+			reflet_prob = 1.0;
+		}
+		if (drand48() < reflet_prob)
+		{
+			scattered = ray(record.p, reflected);
+		}
+		else
+		{
+			scattered = ray(record.p, reflected);
+		}
+		return true;
+	}
+protected:
+private:
+};
 
 
 #endif //RAYTRACER_IN_ONE_WEEKEND_MATERIAL_HPP

@@ -23,20 +23,47 @@ vec3 color_ray(const ray& r, hitable *world, int depth) {
 
 hitable* random_scene(int n)
 {
-	n = 500;
-	hitable ** random_list = new hitable*[n+ 1];
+	//n = 500;
 	
+	hitable ** random_list = new hitable*[n+5];
+
 	random_list[0] = new sphere(vec3(0, -1000, 0), 1000, new lambertian(vec3(0.5, 0.5, 0.5)));
 	int i = 1;
+	while (i <=  n)
+	{
+		std::cout << i << std::endl;
+		float random = drand48();
+		vec3 center = vec3(i/50 * random, 0.2,i%50 * random);
+		//diffuse
+		if (random < 0.8)
+		{
+			random_list[i++] = new sphere(center, 0.2, new lambertian(vec3(drand48()*drand48(), drand48()*drand48(), drand48()*drand48())));
+		}
+		//metal
+		else if (random < 0.95)
+		{
+			random_list[i++] = new sphere(center, 0.2, new metal(vec3(0.5*(1+drand48()), 0.5*(1+drand48()),0.5*(1+drand48())),0.5*(1+drand48())));
+		}
+		//glass
+		else
+		{
+			random_list[i++] = new sphere(center, 0.2, new dielectric(1.5));
+		}
+	}
+	random_list[i++] = new sphere(vec3(0, 1.0, 0), 1.0, new dielectric(1.5));
+	random_list[i++] = new sphere(vec3(-4.0, 1.0, 0), 1.0, new lambertian(vec3(0.4, 0.2, 0.1)));
+	random_list[i++] = new sphere(vec3(4.0, 1.0, 0), 1.0, new metal(vec3(0.7, 0.6, 0.5), 0.0));
+	return new hitable_list(random_list, i);
 }
 
 hitable * default_scene() 
 {
-	hitable *list[4];
+	hitable ** list = new hitable*[4];
 	list[0] = new sphere(vec3(0, 0, -1), 0.5, new lambertian(vec3(0.8, 0.3, 0.3)));
 	list[1] = new sphere(vec3(0, -100.5f, -1), 100, new lambertian(vec3(0.8, 0.8, 0.0)));
 	list[2] = new sphere(vec3(1, 0, -1), 0.5, new metal(vec3(0.8, 0.6, 0.2), 0.1));
 	list[3] = new sphere(vec3(-1, 0, -1), 0.5, new metal(vec3(0.8, 0.8, 0.8), 0.7));
+	return new hitable_list(list, 4);
 }
 
 void ray_tracing(void* buffer, int width, int height, int stride, int maxdepth, int seed){
@@ -45,14 +72,14 @@ void ray_tracing(void* buffer, int width, int height, int stride, int maxdepth, 
   int ny = height;
   int ns = seed;
 
-    //hitable * list = random_scene();
-  hitable * list = default_scene();
-  hitable *world = new hitable_list(list, 4);
+  //hitable * world = random_scene(500);
+  hitable * world = default_scene();
   camera cam;
 
   for (int j = 0; j < ny; j++) {
 	  auto prt = (unsigned int *)((char *)buffer + (ny - j -1) * stride);
     for (int i = 0; i < nx; i++, prt++) {
+		//std::cout << (float)j / ny << std::endl;
       vec3 color(0, 0, 0);
       for (int s = 0; s < ns; s++) {
         float u = float(i + drand48()) / float(nx);

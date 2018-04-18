@@ -5,7 +5,8 @@
 
 #include "imgui/imgui.h"
 #include "imgui_impl_glfw_gl3.h"
-#include "GL/gl3w.h"
+//#include "GL/gl3w.h"
+#include "glad/glad.h"
 #include "renderer/the_renderer.h"
 
 #include <stdio.h>
@@ -45,7 +46,8 @@ int main(int, char**)
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
-    gl3wInit();
+    //gl3wInit();
+	gladLoadGL();
 
     // Setup ImGui binding
     ImGui::CreateContext();

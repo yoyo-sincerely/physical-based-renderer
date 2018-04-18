@@ -16,7 +16,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
-
 include(macros)
 include(modules/sanitizers_support)
 include(modules/clang_tidy_support)
@@ -28,7 +27,13 @@ set_output_paths()
 
 add_subdirectory_ex(3rdpart)
 
-include_directories(3rdpart/glad/include)
+include_directories(
+    3rdpart/glad/include/
+    3rdpart/assimp/assimp/include/
+    3rdpart/glfw/include/
+    3rdpart/glm/
+    3rdpart/stb/
+    )
 
 FILE(GLOB imgui
 src/imgui/*.h

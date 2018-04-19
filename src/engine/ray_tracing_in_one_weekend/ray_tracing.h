@@ -1,7 +1,4 @@
 #pragma once
-#include "../ray_tracing/Color.h"
-#include "../ray_tracing/Vector.h"
-
 #include <iostream>
 #include <limits>
 #include <float.h>

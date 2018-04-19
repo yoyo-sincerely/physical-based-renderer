@@ -7,11 +7,13 @@
 // DEMO CODE
 //-----------------------------------------------------------------------------
 
+using namespace std;
 #if !defined(IMGUI_DISABLE_OBSOLETE_FUNCTIONS) && defined(IMGUI_DISABLE_TEST_WINDOWS) && !defined(IMGUI_DISABLE_RENDERER_WINDOWS)   // Obsolete name since 1.53, TEST->DEMO
 #define IMGUI_DISABLE_RENDERER_WINDOWS
 #endif
 
 #if !defined(IMGUI_DISABLE_RENDERER_WINDOWS)
+
 
 Scene							scene;
 RayTracer*						tracer = nullptr;

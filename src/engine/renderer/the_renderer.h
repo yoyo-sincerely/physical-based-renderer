@@ -9,7 +9,7 @@
 #include <GLFW/glfw3native.h>
 #endif
 
-#include "../imgui/imgui.h"
+#include "imgui/imgui.h"
 #include <ctype.h>          // toupper, isprint
 #include <math.h>           // sqrtf, powf, cosf, sinf, floorf, ceilf
 #include <stdio.h>          // vsnprintf, sscanf, printf
@@ -19,10 +19,10 @@
 #else
 #include <stdint.h>         // intptr_t
 #endif
-#include "../mesh/stb_image.h"		//loading image
-#include "../ray_tracing/RayTracer.h"
-#include "../logger.h"
-#include "../ray_tracing_in_one_weekend/ray_tracing.h"
+#include "stb_image.h"		//loading image
+#include "logger.h"
+#include "../../engine/ray_tracing/RayTracer.h"
+#include "../../engine/ray_tracing_in_one_weekend/ray_tracing.h"
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4996) // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen

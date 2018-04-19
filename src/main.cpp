@@ -3,15 +3,13 @@
 // (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan graphics context creation, etc.)
 // (GL3W is a helper library to access OpenGL functions since there is no standard header to access modern OpenGL functions easily. Alternatives are GLEW, Glad, etc.)
 
-#include "imgui/imgui.h"
-#include "imgui_impl_glfw_gl3.h"
-//#include "GL/gl3w.h"
-#include "glad/glad.h"
-#include "renderer/the_renderer.h"
+#include <imgui\imgui.h>
+#include <imgui\imgui_impl_glfw_gl3.h>
+#include "glad\glad.h"
+#include "engine\renderer\the_renderer.h"
 
 #include <stdio.h>
-#include <GLFW/glfw3.h>
-
+#include <GLFW\glfw3.h>
 
 static void glfw_error_callback(int error, const char* description)
 {

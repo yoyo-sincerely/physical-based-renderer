@@ -28,58 +28,50 @@ set_output_paths()
 add_subdirectory_ex(3rdpart)
 
 include_directories(
-    3rdpart/glad/include/
-    3rdpart/assimp/assimp/include/
-    3rdpart/glfw/include/
-    3rdpart/glm/
-    3rdpart/stb/
-    )
-
-FILE(GLOB imgui
-src/imgui/*.h
-src/imgui/*.cpp
+# src/engine/ray_tracing/
+# src/engine/ray_tracing_in_one_weekend/
+# src/engine/renderer/
+src/editor/core/
+src/editor/mesh/
+3rdpart/glad/include/
+3rdpart/assimp/assimp/include/
+3rdpart/glfw/include/
+3rdpart/glm/
+3rdpart/stb/
+3rdpart/imgui/
 )
 
-FILE(GLOB mesh
-src/mesh/*.h
+FILE(GLOB API_SOURCES 
+3rdpart/glad/src/glad.c
+3rdpart/imgui/imgui/*.cpp
 )
 
-FILE(GLOB ray_tracing
-src/ray_tracing/*.h
-src/ray_tracing/*.cpp
+FILE(GLOB PROJECT_HEAD
+src/engine/renderer/the_renderer.h
+src/engine/ray_tracing/*.h
+src/engine/ray_tracing_in_one_weekend/*.h*
+src/editor/mesh/*.h
+src/editor/core/*.h
 )
 
-# SET(GL 
-# FILE(GLOB GL
-# src/GL/*.c
-# src/GL/*.h
-# )
-
-SET(renderer
-src/renderer/the_renderer.h
-src/renderer/the_renderer.cpp
+FILE(GLOB PROJECT_SOURCES
+src/engine/ray_tracing/*.cpp
+src/engine/ray_tracing_in_one_weekend/*.cpp
+src/engine/renderer/the_renderer.cpp
 )
 
-FILE(GLOB ray_tracing_in_one_weekend
-src/ray_tracing_in_one_weekend/*.h
-src/ray_tracing_in_one_weekend/*.cpp
-src/ray_tracing_in_one_weekend/*.hpp
-)
+source_group("API" FILES ${API_SOURCES})
+source_group("Headers" FILES ${PROJECT_HEAD})
+source_group("Sources" FILES ${PROJECT_SOURCES})
 
 add_executable(AwesomeRenderer
-${imgui}
-${mesh}
-${ray_tracing}
-${renderer}
-${GL}
-${ray_tracing_in_one_weekend}
-3rdpart/glad/src/glad.c
-src/imgui_impl_glfw_gl3.cpp
-src/imgui_impl_glfw_gl3.h
+${PROJECT_HEAD}
+${PROJECT_SOURCES}
+${API_SOURCES}
 src/main.cpp
 )
 
-target_link_libraries(AwesomeRenderer glfw)
-target_link_libraries(AwesomeRenderer assimp)
+target_link_libraries(${PROJECT_NAME} glfw)
+target_link_libraries(${PROJECT_NAME} assimp)
 
 link_directories(${AwesomeRenderer_SOURCE_DIR})

@@ -4,9 +4,6 @@
 [submodule "3rdpart/gl3w"]
 	path = 3rdpart/gl3w
     url = https://github.com/skaslev/gl3w.git
-[submodule "3rdpart/imgui/imgui"]
-	path = 3rdpart/imgui/imgui
-	url = https://github.com/ocornut/imgui.git
 [submodule "3rdpart/pbrt-v3"]
 	path = 3rdpart/pbrt-3
 	url = https://github.com/mmp/pbrt-v3.git

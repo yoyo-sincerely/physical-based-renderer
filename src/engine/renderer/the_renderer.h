@@ -9,7 +9,7 @@
 #include <GLFW/glfw3native.h>
 #endif
 
-#include "imgui/imgui.h"
+#include "imgui.h"
 #include <ctype.h>          // toupper, isprint
 #include <math.h>           // sqrtf, powf, cosf, sinf, floorf, ceilf
 #include <stdio.h>          // vsnprintf, sscanf, printf

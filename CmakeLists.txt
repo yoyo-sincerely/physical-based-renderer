@@ -16,6 +16,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
+if(MSVC)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
+else()
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++14")
+    if(NOT WIN32)
+        set(GLAD_LIBRARIES dl)
+    endif()
+endif()
+
 include(macros)
 include(modules/sanitizers_support)
 include(modules/clang_tidy_support)
@@ -43,7 +52,7 @@ src/editor/mesh/
 
 FILE(GLOB API_SOURCES 
 3rdpart/glad/src/glad.c
-3rdpart/imgui/imgui/*.cpp
+3rdpart/imgui/*.cpp
 )
 
 FILE(GLOB PROJECT_HEAD
@@ -74,4 +83,6 @@ src/main.cpp
 target_link_libraries(${PROJECT_NAME} glfw)
 target_link_libraries(${PROJECT_NAME} assimp)
 
+add_definitions(-DGLFW_INCLUDE_NONE
+    -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 link_directories(${AwesomeRenderer_SOURCE_DIR})

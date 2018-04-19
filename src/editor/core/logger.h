@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "imgui/imgui.h"
+#include "imgui.h"
 using namespace std;
 
 class Log

@@ -12,10 +12,34 @@
 #include <stdio.h>
 #include <GLFW\glfw3.h>
 
+
+//---------------
+// GLFW Callbacks
+//---------------
+
+// static void error_callback(int error, const char* description);
+// void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+// void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+// void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
 static void glfw_error_callback(int error, const char* description)
 {
     fprintf(stderr, "Error %d: %s\n", error, description);
 }
+
+
+// bool cameraMode;
+// bool pointMode = false;
+// bool directionalMode = false;
+// bool iblMode = true;
+// bool saoMode = false;
+// bool fxaaMode = false;
+// bool motionBlurMode = false;
+// bool screenMode = false;
+// bool firstMouse = true;
+// bool guiIsOpen = true;
+// bool keys[1024];
 
 int main(int, char**)
 {
@@ -165,3 +189,92 @@ int main(int, char**)
 
     return 0;
 }
+
+// static void error_callback(int error, const char* description)
+// {
+//     fprintf(stderr, "Error %d: %s\n", error, description);
+// }
+
+
+// void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+// {
+//     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+//         glfwSetWindowShouldClose(window, GL_TRUE);
+
+//     if (key == GLFW_KEY_F11 && action == GLFW_PRESS)
+//     {
+//         screenMode = !screenMode;
+
+
+//     }
+
+//     if (keys[GLFW_KEY_1])
+//         gBufferView = 1;
+
+//     if (keys[GLFW_KEY_2])
+//         gBufferView = 2;
+
+//     if (keys[GLFW_KEY_3])
+//         gBufferView = 3;
+
+//     if (keys[GLFW_KEY_4])
+//         gBufferView = 4;
+
+//     if (keys[GLFW_KEY_5])
+//         gBufferView = 5;
+
+//     if (keys[GLFW_KEY_6])
+//         gBufferView = 6;
+
+//     if (keys[GLFW_KEY_7])
+//         gBufferView = 7;
+
+//     if (keys[GLFW_KEY_8])
+//         gBufferView = 8;
+
+//     if (keys[GLFW_KEY_9])
+//         gBufferView = 9;
+
+//     if (key >= 0 && key < 1024)
+//     {
+//         if (action == GLFW_PRESS)
+//             keys[key] = true;
+//         else if (action == GLFW_RELEASE)
+//             keys[key] = false;
+//     }
+// }
+
+
+// void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+// {
+//     if (firstMouse)
+//     {
+//         lastX = xpos;
+//         lastY = ypos;
+//         firstMouse = false;
+//     }
+
+//     GLfloat xoffset = xpos - lastX;
+//     GLfloat yoffset = lastY - ypos;
+//     lastX = xpos;
+//     lastY = ypos;
+
+//     if (cameraMode)
+//         camera.mouseCall(xoffset, yoffset);
+// }
+
+
+// void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+// {
+//     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+//         cameraMode = true;
+//     else
+//         cameraMode = false;
+// }
+
+
+// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+// {
+//     if (cameraMode)
+//         camera.scrollCall(yoffset);
+// }

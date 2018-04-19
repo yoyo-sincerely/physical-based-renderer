@@ -1,6 +1,7 @@
 #pragma once
 #include "Math.h"
 
+namespace RayTracing{
 struct Color
 {
 public:
@@ -156,3 +157,5 @@ public:
 		SkyBlue = 0xFF6495ED
 	};
 };
+
+}

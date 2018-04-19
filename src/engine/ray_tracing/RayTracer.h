@@ -7,6 +7,7 @@
 
 using namespace std;
 
+namespace RayTracing{
 struct Ray
 {
 	Vector Position;
@@ -19,11 +20,11 @@ using Sampler = function<T(const Vector&)> ;
 
 struct Material
 {
-	Sampler<Color> Diffuse;      //Âþ·´ÉäÑÕÉ«
-	Sampler<Color> Specular;     //¾µÃæ·´ÉäÑÕÉ«
-	Sampler<float> Power;        //¾µÃæ¸ß¹âÏµÊý
-	Sampler<float> Refraction;   //ÕÛÉäÂÊ
-	Sampler<Color> Transparency; //Í¸Ã÷¶È
+	Sampler<Color> Diffuse;      //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É«
+	Sampler<Color> Specular;     //ï¿½ï¿½ï¿½æ·´ï¿½ï¿½ï¿½ï¿½É«
+	Sampler<float> Power;        //ï¿½ï¿½ï¿½ï¿½ß¹ï¿½Ïµï¿½ï¿½
+	Sampler<float> Refraction;   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	Sampler<Color> Transparency; //Í¸ï¿½ï¿½ï¿½ï¿½
 };
 
 struct HitTestResult;
@@ -234,3 +235,5 @@ public:
 };
 
 void SetDefaultScene(Scene* scene);
+
+}

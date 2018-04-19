@@ -15,8 +15,8 @@ using namespace std;
 #if !defined(IMGUI_DISABLE_RENDERER_WINDOWS)
 
 
-Scene							scene;
-RayTracer*						tracer = nullptr;
+RayTracing::Scene							scene;
+RayTracing::RayTracer*						tracer = nullptr;
 ExampleAppLog					g_Logger;
 static bool						g_ShowLogger = true;
 static bool						g_IsLoadImage = false;
@@ -170,7 +170,7 @@ static void Render()
 {
 	//init
 	SetDefaultScene(&scene);
-	tracer = new RayTracer(&scene);
+	tracer = new RayTracing::RayTracer(&scene);
 	ImFontAtlas * buffer = new ImFontAtlas;
 	buffer->TexWidth = 800;
 	buffer->TexHeight = 600;

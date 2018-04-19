@@ -1,6 +1,7 @@
 #pragma once
 #include "Math.h"
 
+namespace RayTracing{
 struct Vector3
 {
 	float X, Y, Z;
@@ -248,3 +249,5 @@ inline Vector4 operator *(float f, const Vector4& v)
 }
 
 typedef Vector3 Vector;
+
+}

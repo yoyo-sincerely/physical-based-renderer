@@ -2,7 +2,7 @@
 
 #include <ppl.h>
 using namespace concurrency;
-
+namespace RayTracing{
 Color Shade(const Shape* thing, const Vector& pos, const Vector& norm, const Vector& reflect, const Scene& scene)
 {
 	Color ret;
@@ -42,7 +42,7 @@ Color Shade(const Shape* thing, const Vector& pos, const Vector& norm, const Vec
 
 __forceinline float Fresnel(const Vector& wo, Vector& normal, float n, Vector* reflect, Vector* refract)
 {
-	float factor = 1;                        //·ÆÄù¶ûÏµÊý
+	float factor = 1;                        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½
 	auto cosa = wo * normal;
 	if (cosa < 0)
 	{
@@ -52,13 +52,13 @@ __forceinline float Fresnel(const Vector& wo, Vector& normal, float n, Vector* r
 			n = 1 / n;
 	}
 
-	*reflect =2 * cosa * normal - wo;//·´ÉäÏòÁ¿
+	*reflect =2 * cosa * normal - wo;//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 	if (n != 0)
 	{
-		auto cosi = cosa;                           //cos(·´Éä½Ç/ÈëÉä½Ç)
-		auto cost = 1 - (1 - cosi * cosi) / (n * n);//cos(ÕÛÉä½Ç)
-		if (cost > 0) //·ÇÈ«·´Éä
+		auto cosi = cosa;                           //cos(ï¿½ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½ï¿½ï¿½)
+		auto cost = 1 - (1 - cosi * cosi) / (n * n);//cos(ï¿½ï¿½ï¿½ï¿½ï¿½)
+		if (cost > 0) //ï¿½ï¿½È«ï¿½ï¿½ï¿½ï¿½
 		{
 			cost = sqrt(cost);
 			*refract = ((cosi - cost * n) * normal - wo).Normalize();
@@ -83,9 +83,9 @@ Color Trace(const Ray& ray, const Scene& scene, int depth)
 	if (!scene.HitTest(ray, &hittest)) return scene.Ambient;
 
 	auto d = ray.Direction;
-	auto pos = hittest.Distance * ray.Direction + ray.Position; //½»µãÎ»ÖÃ
-	auto normal = hittest.Normal;                               //½»µã·¨ÏòÁ¿
-	auto cosa = normal * d;                                     //-Cos(ÈëÉä½Ç)
+	auto pos = hittest.Distance * ray.Direction + ray.Position; //ï¿½ï¿½ï¿½ï¿½Î»ï¿½ï¿½
+	auto normal = hittest.Normal;                               //ï¿½ï¿½ï¿½ã·¨ï¿½ï¿½ï¿½ï¿½
+	auto cosa = normal * d;                                     //-Cos(ï¿½ï¿½ï¿½ï¿½ï¿½)
 
 	Vector reflect, refract;
 	auto f = Fresnel(-d, normal, hittest.Shape->Material.Refraction(pos), &reflect, &refract);
@@ -96,11 +96,11 @@ Color Trace(const Ray& ray, const Scene& scene, int depth)
 	if (depth <= 0) return result;
 	depth--;
 
-	//×·×Ù·´Éä¹âÏß
+	//×·ï¿½Ù·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (f > 0)
 		result += Trace({ pos, reflect, INFINITY}, scene, depth) * f * hittest.Shape->Material.Specular(pos);
 
-	//×·×ÙÕÛÉä¹âÏß
+	//×·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	if (f < 1)
 		result += Trace({ pos, refract, INFINITY }, scene, depth) * (1 - f) * hittest.Shape->Material.Transparency(pos);
 
@@ -196,4 +196,6 @@ void SetDefaultScene(Scene* scene)
 void SetNewScene(Scene * scene)
 {
 	Plane* p = new Plane();
+}
+
 }

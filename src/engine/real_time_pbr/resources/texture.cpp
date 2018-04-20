@@ -1,3 +1,7 @@
+#define STB_IMAGE_IMPLEMENTATION
+// #ifdef STBI_NO_STDIO
+// #error who define this fucking define?
+// #endif
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -5,7 +9,8 @@
 
 #include <glad/glad.h>
 
-#include "stb_image.h"
+#include <stb_image.h>
+//#include "stb_image.h"
 #include "texture.h"
 
 

@@ -51,10 +51,6 @@ FILE(GLOB API_SOURCES
 )
 
 FILE(GLOB PROJECT_HEAD
-src/engine/real_time_pbr/camera/*.h
-src/engine/real_time_pbr/mesh/*.h
-src/engine/real_time_pbr/lighting/*.h
-src/engine/real_time_pbr/resources/*.h
 src/engine/renderer/the_renderer.h
 src/engine/ray_tracing/*.h
 src/engine/ray_tracing_in_one_weekend/*.h*
@@ -69,6 +65,11 @@ src/engine/renderer/the_renderer.cpp
 )
 
 FILE(GLOB REAL_TIME_PBR
+src/engine/real_time_pbr/camera/*.h
+src/engine/real_time_pbr/mesh/*.h
+src/engine/real_time_pbr/lighting/*.h
+src/engine/real_time_pbr/resources/*.h
+
 src/engine/real_time_pbr/camera/*.cpp
 src/engine/real_time_pbr/lighting/*.cpp
 src/engine/real_time_pbr/mesh/*.cpp

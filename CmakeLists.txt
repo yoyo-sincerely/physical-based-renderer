@@ -11,24 +11,15 @@ option(ASSIMP_BUILD_SAMPLES OFF)
 option(ASSIMP_BUILD_TESTS OFF)
 
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
-if(MSVC)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W4")
-else()
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -std=c++14")
-    if(NOT WIN32)
-        set(GLAD_LIBRARIES dl)
-    endif()
-endif()
-
 include(macros)
-include(modules/sanitizers_support)
-include(modules/clang_tidy_support)
-include(modules/add_ide_support)
+# include(modules/sanitizers_support)
+# include(modules/clang_tidy_support)
+# include(modules/add_ide_support)
 
 detect_platform()
 print_info()
@@ -37,6 +28,10 @@ set_output_paths()
 add_subdirectory_ex(3rdpart)
 
 include_directories(
+src/engine/real_time_pbr/camera/
+src/engine/real_time_pbr/lighting/
+src/engine/real_time_pbr/mesh/
+src/engine/real_time_pbr/resources/
 # src/engine/ray_tracing/
 # src/engine/ray_tracing_in_one_weekend/
 # src/engine/renderer/
@@ -56,6 +51,10 @@ FILE(GLOB API_SOURCES
 )
 
 FILE(GLOB PROJECT_HEAD
+src/engine/real_time_pbr/camera/*.h
+src/engine/real_time_pbr/mesh/*.h
+src/engine/real_time_pbr/lighting/*.h
+src/engine/real_time_pbr/resources/*.h
 src/engine/renderer/the_renderer.h
 src/engine/ray_tracing/*.h
 src/engine/ray_tracing_in_one_weekend/*.h*
@@ -67,6 +66,13 @@ FILE(GLOB PROJECT_SOURCES
 src/engine/ray_tracing/*.cpp
 src/engine/ray_tracing_in_one_weekend/*.cpp
 src/engine/renderer/the_renderer.cpp
+)
+
+FILE(GLOB REAL_TIME_PBR
+src/engine/real_time_pbr/camera/*.cpp
+src/engine/real_time_pbr/lighting/*.cpp
+src/engine/real_time_pbr/mesh/*.cpp
+src/engine/real_time_pbr/resources/*.cpp
 )
 
 FILE(GLOB PROJECT_CONFIGS
@@ -81,12 +87,14 @@ LICENSE
 source_group("API" FILES ${API_SOURCES})
 source_group("Headers" FILES ${PROJECT_HEAD})
 source_group("Sources" FILES ${PROJECT_SOURCES})
+source_group("RealtimePBR" FILES ${REAL_TIME_PBR})
 
 add_executable(AwesomeRenderer
 ${PROJECT_CONFIGS}
 ${PROJECT_HEAD}
 ${PROJECT_SOURCES}
 ${API_SOURCES}
+${REAL_TIME_PBR}
 src/main.cpp
 )
 

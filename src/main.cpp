@@ -1,50 +1,59 @@
-// ImGui - standalone example application for GLFW + OpenGL 3, using programmable pipeline
-// If you are new to ImGui, see examples/README.txt and documentation at the top of imgui.cpp.
-// (GLFW is a cross-platform general purpose library for handling windows, inputs, OpenGL/Vulkan graphics context creation, etc.)
-// (GL3W is a helper library to access OpenGL functions since there is no standard header to access modern OpenGL functions easily. Alternatives are GLEW, Glad, etc.)
+#include "shader.h"
+#include "camera.h"
+#include "model.h"
+#include "shape.h"
+#include "texture.h"
+#include "light.h"
+#include "skybox.h"
+#include "material.h"
 
 #include <imgui.h>
-//#include "imgui\imgui_impl_glfw_gl3.h"
 #include <imgui_impl_glfw_gl3.h>
-#include "glad\glad.h"
+#include <glad\glad.h>
+#include <GLFW\glfw3.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 #include "engine\renderer\the_renderer.h"
 
 #include <stdio.h>
-#include <GLFW\glfw3.h>
-
 
 //---------------
 // GLFW Callbacks
 //---------------
 
-// static void error_callback(int error, const char* description);
-// void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-// void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-// void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+static void error_callback(int error, const char* description);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
-static void glfw_error_callback(int error, const char* description)
-{
-    fprintf(stderr, "Error %d: %s\n", error, description);
-}
+Camera camera(glm::vec3(0.0f, 0.0f, 4.0f));
 
+bool cameraMode;
+bool pointMode = false;
+bool directionalMode = false;
+bool iblMode = true;
+bool saoMode = false;
+bool fxaaMode = false;
+bool motionBlurMode = false;
+bool screenMode = false;
+bool firstMouse = true;
+bool guiIsOpen = true;
+bool keys[1024];
 
-// bool cameraMode;
-// bool pointMode = false;
-// bool directionalMode = false;
-// bool iblMode = true;
-// bool saoMode = false;
-// bool fxaaMode = false;
-// bool motionBlurMode = false;
-// bool screenMode = false;
-// bool firstMouse = true;
-// bool guiIsOpen = true;
-// bool keys[1024];
+GLfloat lastFrame = 0.0f;
+GLfloat deltaTime = 0.0f;
+
+GLuint gBufferView = 1;
+GLuint lastX = 0;
+GLuint lastY = 0;
 
 int main(int, char**)
 {
     // Setup window
-    glfwSetErrorCallback(glfw_error_callback);
+    glfwSetErrorCallback(error_callback);
     if (!glfwInit())
         return 1;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -75,28 +84,22 @@ int main(int, char**)
     // Setup ImGui binding
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;  // Enable Keyboard Controls
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;   // Enable Gamepad Controls
+	glfwSetKeyCallback(window, key_callback);
+    glfwSetCursorPosCallback(window, mouse_callback);
+    glfwSetMouseButtonCallback(window, mouse_button_callback);
+    glfwSetScrollCallback(window, scroll_callback);
+
+
+	//window callback
     ImGui_ImplGlfwGL3_Init(window, true);
+	// glfwSetKeyCallback(window, key_callback);
+    // glfwSetCursorPosCallback(window, mouse_callback);
+    // glfwSetMouseButtonCallback(window, mouse_button_callback);
+    // glfwSetScrollCallback(window, scroll_callback);
 
     // Setup style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
-
-    // Load Fonts
-    // - If no fonts are loaded, dear imgui will use the default font. You can also load multiple fonts and use ImGui::PushFont()/PopFont() to select them. 
-    // - AddFontFromFileTTF() will return the ImFont* so you can store it if you need to select the font among multiple. 
-    // - If the file cannot be loaded, the function will return NULL. Please handle those errors in your application (e.g. use an assertion, or display an error and quit).
-    // - The fonts will be rasterized at a given size (w/ oversampling) and stored into a texture when calling ImFontAtlas::Build()/GetTexDataAsXXXX(), which ImGui_ImplXXXX_NewFrame below will call.
-    // - Read 'misc/fonts/README.txt' for more instructions and details.
-    // - Remember that in C/C++ if you want to include a backslash \ in a string literal you need to write a double backslash \\ !
-    //io.Fonts->AddFontDefault();
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Roboto-Medium.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/Cousine-Regular.ttf", 15.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/DroidSans.ttf", 16.0f);
-    //io.Fonts->AddFontFromFileTTF("../../misc/fonts/ProggyTiny.ttf", 10.0f);
-    //ImFont* font = io.Fonts->AddFontFromFileTTF("c:\\Windows\\Fonts\\ArialUni.ttf", 18.0f, NULL, io.Fonts->GetGlyphRangesJapanese());
-    //IM_ASSERT(font != NULL);
 
     bool show_demo_window = false;
 	bool show_renderer_window = true;
@@ -106,12 +109,13 @@ int main(int, char**)
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
-        // You can read the io.WantCaptureMouse, io.WantCaptureKeyboard flags to tell if dear imgui wants to use your inputs.
-        // - When io.WantCaptureMouse is true, do not dispatch mouse input data to your main application.
-        // - When io.WantCaptureKeyboard is true, do not dispatch keyboard input data to your main application.
-        // Generally you may always pass all inputs to dear imgui, and hide them from your application based on those two flags.
-        glfwPollEvents();
-        ImGui_ImplGlfwGL3_NewFrame();
+		GLfloat currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
+		glfwPollEvents();
+
+		ImGui_ImplGlfwGL3_NewFrame();
 
 		//main menu
 		{
@@ -142,24 +146,7 @@ int main(int, char**)
 
 			}
 		}
-        // 1. Show a simple window.
-        // Tip: if we don't call ImGui::Begin()/ImGui::End() the widgets automatically appears in a window called "Debug".
-        {
-            static float f = 0.0f;
-            static int counter = 0;
-            //ImGui::Text("Hello, world!");                           // Display some text (you can use a format string too)
-            //ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f    
-            //ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
 
-            //if (ImGui::Button("Button"))                            // Buttons return true when clicked (NB: most widgets return true when edited/activated)
-            //    counter++;
-            //ImGui::SameLine();
-            //ImGui::Text("counter = %d", counter);
-
-            //ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-        }
-
-        // 3. Show the ImGui demo window. Most of the sample code is in ImGui::ShowDemoWindow(). Read its code to learn more about Dear ImGui!
         if (show_demo_window)
         {
             ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
@@ -190,91 +177,91 @@ int main(int, char**)
     return 0;
 }
 
-// static void error_callback(int error, const char* description)
-// {
-//     fprintf(stderr, "Error %d: %s\n", error, description);
-// }
+static void error_callback(int error, const char* description)
+{
+    fprintf(stderr, "Error %d: %s\n", error, description);
+}
 
 
-// void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
-// {
-//     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-//         glfwSetWindowShouldClose(window, GL_TRUE);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+{
+    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+        glfwSetWindowShouldClose(window, GL_TRUE);
 
-//     if (key == GLFW_KEY_F11 && action == GLFW_PRESS)
-//     {
-//         screenMode = !screenMode;
-
-
-//     }
-
-//     if (keys[GLFW_KEY_1])
-//         gBufferView = 1;
-
-//     if (keys[GLFW_KEY_2])
-//         gBufferView = 2;
-
-//     if (keys[GLFW_KEY_3])
-//         gBufferView = 3;
-
-//     if (keys[GLFW_KEY_4])
-//         gBufferView = 4;
-
-//     if (keys[GLFW_KEY_5])
-//         gBufferView = 5;
-
-//     if (keys[GLFW_KEY_6])
-//         gBufferView = 6;
-
-//     if (keys[GLFW_KEY_7])
-//         gBufferView = 7;
-
-//     if (keys[GLFW_KEY_8])
-//         gBufferView = 8;
-
-//     if (keys[GLFW_KEY_9])
-//         gBufferView = 9;
-
-//     if (key >= 0 && key < 1024)
-//     {
-//         if (action == GLFW_PRESS)
-//             keys[key] = true;
-//         else if (action == GLFW_RELEASE)
-//             keys[key] = false;
-//     }
-// }
+    if (key == GLFW_KEY_F11 && action == GLFW_PRESS)
+    {
+        screenMode = !screenMode;
 
 
-// void mouse_callback(GLFWwindow* window, double xpos, double ypos)
-// {
-//     if (firstMouse)
-//     {
-//         lastX = xpos;
-//         lastY = ypos;
-//         firstMouse = false;
-//     }
+    }
 
-//     GLfloat xoffset = xpos - lastX;
-//     GLfloat yoffset = lastY - ypos;
-//     lastX = xpos;
-//     lastY = ypos;
+    if (keys[GLFW_KEY_1])
+        gBufferView = 1;
 
-//     if (cameraMode)
-//         camera.mouseCall(xoffset, yoffset);
-// }
+    if (keys[GLFW_KEY_2])
+        gBufferView = 2;
+
+    if (keys[GLFW_KEY_3])
+        gBufferView = 3;
+
+    if (keys[GLFW_KEY_4])
+        gBufferView = 4;
+
+    if (keys[GLFW_KEY_5])
+        gBufferView = 5;
+
+    if (keys[GLFW_KEY_6])
+        gBufferView = 6;
+
+    if (keys[GLFW_KEY_7])
+        gBufferView = 7;
+
+    if (keys[GLFW_KEY_8])
+        gBufferView = 8;
+
+    if (keys[GLFW_KEY_9])
+        gBufferView = 9;
+
+    if (key >= 0 && key < 1024)
+    {
+        if (action == GLFW_PRESS)
+            keys[key] = true;
+        else if (action == GLFW_RELEASE)
+            keys[key] = false;
+    }
+}
 
 
-// void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
-// {
-//     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
-//         cameraMode = true;
-//     else
-//         cameraMode = false;
-// }
+void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+{
+    if (firstMouse)
+    {
+        lastX = xpos;
+        lastY = ypos;
+        firstMouse = false;
+    }
+
+    GLfloat xoffset = xpos - lastX;
+    GLfloat yoffset = lastY - ypos;
+    lastX = xpos;
+    lastY = ypos;
+
+    if (cameraMode)
+        camera.mouseCall(xoffset, yoffset);
+}
 
 
-// void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-// {
-//     if (cameraMode)
-//         camera.scrollCall(yoffset);
-// }
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+{
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
+        cameraMode = true;
+    else
+        cameraMode = false;
+}
+
+
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+    if (cameraMode)
+        camera.scrollCall(yoffset);
+}

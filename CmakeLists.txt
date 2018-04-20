@@ -69,11 +69,21 @@ src/engine/ray_tracing_in_one_weekend/*.cpp
 src/engine/renderer/the_renderer.cpp
 )
 
+FILE(GLOB PROJECT_CONFIGS
+CmakeLists.txt
+.gitignore
+.gitsubmodule
+TODO.md
+README.md
+LICENSE
+)
+
 source_group("API" FILES ${API_SOURCES})
 source_group("Headers" FILES ${PROJECT_HEAD})
 source_group("Sources" FILES ${PROJECT_SOURCES})
 
 add_executable(AwesomeRenderer
+${PROJECT_CONFIGS}
 ${PROJECT_HEAD}
 ${PROJECT_SOURCES}
 ${API_SOURCES}

@@ -72,7 +72,7 @@ src/engine/renderer/the_renderer.cpp
 FILE(GLOB PROJECT_CONFIGS
 CmakeLists.txt
 .gitignore
-.gitsubmodule
+.gitmodules
 TODO.md
 README.md
 LICENSE

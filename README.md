@@ -26,3 +26,14 @@ cmake -G "Visual Studio 15 2017 Win64" ..
 - G-Buffer structure
 
 ![](https://github.com/yoyo-sincerely/MyPic/blob/master/PBR/GBuffer_data_structure.png?raw=true)
+
+## Dependencies
+
+in 3rdpart file:
+
+- Window & Input system : GLFW
+- OpenGL Function Loader : GLAD
+- OpenGL Mathematic Functions : GLM
+- Image Loading : stb
+- Mesh Loading : Assimp
+

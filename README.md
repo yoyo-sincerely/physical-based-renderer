@@ -20,3 +20,9 @@ in win64, run:
 ```
 cmake -G "Visual Studio 15 2017 Win64" ..
 ```
+
+## Feature
+
+- G-Buffer structure
+
+![](https://github.com/yoyo-sincerely/MyPic/blob/master/PBR/GBuffer_data_structure.png?raw=true)

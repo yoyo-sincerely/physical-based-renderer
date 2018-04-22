@@ -58,13 +58,10 @@ void ShowRendererWindow(bool* p_open)
 
 	if (!ImGui::Begin("The Renderer", p_open, window_flags))
 	{
-		// Early out if the window is collapsed, as an optimization.
 		ImGui::End();
 		return;
 	}
 	ImGui::PushItemWidth(-140);                                 // Right align, keep 140 pixels for labels
-
-	//ImGui::Text("the renderer. ImGui version is (%s)", IMGUI_VERSION);
 
 	// Menu
 	if (ImGui::BeginMenuBar())
@@ -89,19 +86,18 @@ void ShowRendererWindow(bool* p_open)
 
 	if (g_ShowLogger) ShowLogger(&g_ShowLogger);
 	if (g_ShowImage) ShowImage();
+
 	ImGui::End();
 }
 
 static void ShowMenuFile() 
 {
-	if (ImGui::MenuItem("show log"))		g_ShowLogger = true;
-	if (ImGui::MenuItem("show/close image"))	
-	{
-		g_ShowImage ^= 1;
-	}
-	if (ImGui::MenuItem("render test"))		RenderTest();
-	if (ImGui::MenuItem("render"))		Render();
-	if (ImGui::MenuItem("ray tracing in weekend")) raytracing();
+	if (ImGui::MenuItem("show log"))				g_ShowLogger = true;
+	if (ImGui::MenuItem("show/close image"))		g_ShowImage ^= 1;
+	ImGui::Separator();
+	if (ImGui::MenuItem("render test"))				RenderTest();
+	if (ImGui::MenuItem("render"))					Render();
+	if (ImGui::MenuItem("ray tracing in weekend"))	raytracing();
 }
 
 static void ShowLastImage() 

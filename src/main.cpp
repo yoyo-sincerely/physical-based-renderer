@@ -19,17 +19,13 @@
 
 #include <stdio.h>
 
-//---------------
-// GLFW Callbacks
-//---------------
-
-static void error_callback(int error, const char* description);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+using namespace PBR;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 4.0f));
+
+bool showDemoWindow = false;
+bool showRendererWindow = false;
+bool showInspectorWindow = false;
 
 bool cameraMode;
 bool pointMode = false;
@@ -50,6 +46,22 @@ GLuint gBufferView = 1;
 GLuint lastX = 0;
 GLuint lastY = 0;
 
+//---------------
+// setting
+//---------------
+void imguiSetup();
+void cameraMove();
+
+//---------------
+// GLFW Callbacks
+//---------------
+
+static void error_callback(int error, const char* description);
+void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
+void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+
 int main(int, char**)
 {
     // Setup window
@@ -66,44 +78,35 @@ int main(int, char**)
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
-#if __FULL_SCREEN__
+#if FULL_SCREEN
 	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
 	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
     GLFWwindow* window = glfwCreateWindow(mode->width, mode->redBits, "Awesome Renderer", monitor, NULL);
 #else
-	GLFWwindow* window = glfwCreateWindow(1980, 960, "Awesome Renderer", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(1280, 720, "Awesome Renderer", NULL, NULL);
 #endif
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1); // Enable vsync
-    //gl3wInit();
 	gladLoadGL();
 
     // Setup ImGui binding
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
+
+	//window callback
+    ImGui_ImplGlfwGL3_Init(window, true);
 	glfwSetKeyCallback(window, key_callback);
     glfwSetCursorPosCallback(window, mouse_callback);
     glfwSetMouseButtonCallback(window, mouse_button_callback);
     glfwSetScrollCallback(window, scroll_callback);
 
-
-	//window callback
-    ImGui_ImplGlfwGL3_Init(window, true);
-	// glfwSetKeyCallback(window, key_callback);
-    // glfwSetCursorPosCallback(window, mouse_callback);
-    // glfwSetMouseButtonCallback(window, mouse_button_callback);
-    // glfwSetScrollCallback(window, scroll_callback);
-
     // Setup style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
 
-    bool show_demo_window = false;
-	bool show_renderer_window = true;
-	bool show_inspector_window = true;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     // Main loop
@@ -115,48 +118,8 @@ int main(int, char**)
 
 		glfwPollEvents();
 
-		ImGui_ImplGlfwGL3_NewFrame();
-
-		//main menu
-		{
-			if (ImGui::BeginMainMenuBar())
-			{
-				if (ImGui::BeginMenu("File"))
-				{
-					ImGui::EndMenu();
-				}
-				if (ImGui::BeginMenu("Edit"))
-				{
-					if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-					if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-					ImGui::Separator();
-					if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-					if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-					if (ImGui::MenuItem("Paste", "CTRL+V")) {}
-					ImGui::EndMenu();
-				}
-				if (ImGui::BeginMenu("Windows"))
-				{
-					ImGui::MenuItem("Demo", NULL, &show_demo_window);
-					ImGui::MenuItem("Renderer", NULL, &show_renderer_window);
-					ImGui::MenuItem("Attribute", NULL, &show_inspector_window);
-					ImGui::EndMenu();
-				}
-				ImGui::EndMainMenuBar();
-
-			}
-		}
-
-        if (show_demo_window)
-        {
-            ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
-            ImGui::ShowDemoWindow(&show_demo_window);
-        }
-
-		if (show_renderer_window) 
-		{
-			ShowRendererWindow(&show_renderer_window);
-		}
+		//setting
+		imguiSetup();
 
         // Rendering
         int display_w, display_h;
@@ -264,4 +227,61 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
     if (cameraMode)
         camera.scrollCall(yoffset);
+}
+
+void imguiSetup() 
+{
+	ImGui_ImplGlfwGL3_NewFrame();
+
+	if (ImGui::BeginMainMenuBar())
+	{
+		if (ImGui::BeginMenu("File"))
+		{
+			ImGui::EndMenu();
+		}
+		//if (ImGui::BeginMenu("Edit"))
+		//{
+		//	if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+		//	if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+		//	ImGui::Separator();
+		//	if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+		//	if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+		//	if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+		//	ImGui::EndMenu();
+		//}
+		if (ImGui::BeginMenu("Windows"))
+		{
+			ImGui::MenuItem("Demo", NULL, &showDemoWindow);
+			ImGui::MenuItem("Renderer", NULL, &showRendererWindow);
+			//ImGui::MenuItem("Attribute", NULL, &show_inspector_window);
+			ImGui::EndMenu();
+		}
+		ImGui::EndMainMenuBar();
+
+	}
+
+    if (showDemoWindow)
+    {
+        ImGui::SetNextWindowPos(ImVec2(650, 20), ImGuiCond_FirstUseEver); // Normally user code doesn't need/want to call this because positions are saved in .ini file anyway. Here we just want to make the demo initial state a bit more friendly!
+        ImGui::ShowDemoWindow(&showDemoWindow);
+    }
+
+	if (showRendererWindow) 
+	{
+		ShowRendererWindow(&showRendererWindow);
+	}
+
+	//ImGui::End();
+}
+
+void cameraMove() 
+{
+    if (keys[GLFW_KEY_W])
+        camera.keyboardCall(FORWARD, deltaTime);
+    if (keys[GLFW_KEY_S])
+        camera.keyboardCall(BACKWARD, deltaTime);
+    if (keys[GLFW_KEY_A])
+        camera.keyboardCall(LEFT, deltaTime);
+    if (keys[GLFW_KEY_D])
+        camera.keyboardCall(RIGHT, deltaTime);
 }

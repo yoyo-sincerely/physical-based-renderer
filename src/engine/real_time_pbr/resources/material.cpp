@@ -11,54 +11,56 @@
 
 #include "material.h"
 
+namespace PBR {
 
-Material::Material()
-{
+	Material::Material()
+	{
 
-}
-
-
-Material::~Material()
-{
-
-}
+	}
 
 
-void Material::addTexture(std::string uniformName, Texture texObj)
-{
-    this->texList.push_back(std::tuple<std::string, Texture>(uniformName, texObj));
-}
+	Material::~Material()
+	{
+
+	}
 
 
-void Material::setShader(Shader& shader)
-{
-    this->matShader = shader;
-}
+	void Material::addTexture(std::string uniformName, Texture texObj)
+	{
+		this->texList.push_back(std::tuple<std::string, Texture>(uniformName, texObj));
+	}
 
 
-void Material::renderToShader()
-{
-    this->matShader.useShader();
+	void Material::setShader(Shader& shader)
+	{
+		this->matShader = shader;
+	}
 
-    std::cout << "texList Size : " << this->texList.size() << std::endl;
 
-    for(GLuint i = 0; i < this->texList.size(); i++)
-    {
-        std::string currentUniformName = std::get<0>(this->texList[i]);
-        Texture currentTex = std::get<1>(this->texList[i]);
+	void Material::renderToShader()
+	{
+		this->matShader.useShader();
 
-        std::cout << "i : " << i << std::endl;
-        std::cout << "texWidth : " << currentTex.getTexWidth() << std::endl;
-        std::cout << "texHeight : " << currentTex.getTexHeight() << std::endl;
-        std::cout << "texUniformName : " << currentTex.getTexName() << std::endl;
-        std::cout << "ActiveTexture sent : " << GL_TEXTURE0 + i << std::endl;
+		std::cout << "texList Size : " << this->texList.size() << std::endl;
 
-        glActiveTexture(GL_TEXTURE0 + i);
-        currentTex.useTexture();
-        glUniform1i(glGetUniformLocation(this->matShader.Program, currentUniformName.c_str()), i);
+		for (GLuint i = 0; i < this->texList.size(); i++)
+		{
+			std::string currentUniformName = std::get<0>(this->texList[i]);
+			Texture currentTex = std::get<1>(this->texList[i]);
 
-        std::cout << "------" << std::endl;
-    }
+			std::cout << "i : " << i << std::endl;
+			std::cout << "texWidth : " << currentTex.getTexWidth() << std::endl;
+			std::cout << "texHeight : " << currentTex.getTexHeight() << std::endl;
+			std::cout << "texUniformName : " << currentTex.getTexName() << std::endl;
+			std::cout << "ActiveTexture sent : " << GL_TEXTURE0 + i << std::endl;
 
-    std::cout << "============" << std::endl;
+			glActiveTexture(GL_TEXTURE0 + i);
+			currentTex.useTexture();
+			glUniform1i(glGetUniformLocation(this->matShader.Program, currentUniformName.c_str()), i);
+
+			std::cout << "------" << std::endl;
+		}
+
+		std::cout << "============" << std::endl;
+	}
 }

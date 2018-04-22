@@ -17,19 +17,21 @@
 
 #include "mesh.h"
 
+namespace PBR {
 
-class Model 
-{
-    public:
-        Model();
-        ~Model();
-        void loadModel(std::string path);
-        void Draw();
+	class Model
+	{
+	public:
+		Model();
+		~Model();
+		void loadModel(std::string path);
+		void Draw();
 
-    private:
-        std::vector<Mesh> meshes;
-        std::string directory;
+	private:
+		std::vector<Mesh> meshes;
+		std::string directory;
 
-        void processNode(aiNode* node, const aiScene* scene);
-        Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-};
+		void processNode(aiNode* node, const aiScene* scene);
+		Mesh processMesh(aiMesh* mesh, const aiScene* scene);
+	};
+}

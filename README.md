@@ -25,12 +25,12 @@ cmake -G "Visual Studio 15 2017 Win64" ..
 
 <!--![](https://github.com/yoyo-sincerely/MyPic/blob/master/PBR/GBuffer_data_structure.png?raw=true)-->
 
-RT && Channel | Red | Green | Blue | Alpha
-- | - | - | - | - | - 
-RT0 | ViewPosition.X | ViewPosition.Y | ViewPosition.Z | Depth |
-RT1 | Albedo.R | Albedo.G | Albedo.B | Roughness |
-RT2 | Normal.R | Normal.G | Normal.B | Matelness | 
-RT3 | AO | Velocity.R | Velocity.G | 
+| RT && Channel | Red | Green | Blue | Alpha |
+| - | - | - | - | - |
+| RT0 | ViewPosition.X | ViewPosition.Y | ViewPosition.Z | Depth |
+| RT1 | Albedo.R | Albedo.G | Albedo.B | Roughness |
+| RT2 | Normal.R | Normal.G | Normal.B | Matelness | 
+| RT3 | AO | Velocity.R | Velocity.G | 
  
 
 

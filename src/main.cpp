@@ -27,6 +27,54 @@ bool showDemoWindow = false;
 bool showRendererWindow = false;
 bool showInspectorWindow = false;
 
+
+//---------------------------------
+// Variables & objects declarations
+//---------------------------------
+
+GLuint WIDTH = 1280;
+GLuint HEIGHT = 720;
+
+GLuint screenQuadVAO, screenQuadVBO;
+GLuint gBuffer, zBuffer, gPosition, gNormal, gAlbedo, gEffects;
+GLuint saoFBO, saoBlurFBO, saoBuffer, saoBlurBuffer;
+GLuint postprocessFBO, postprocessBuffer;
+GLuint envToCubeFBO, irradianceFBO, prefilterFBO, brdfLUTFBO, envToCubeRBO, irradianceRBO, prefilterRBO, brdfLUTRBO;
+
+GLint gBufferView = 1;
+GLint tonemappingMode = 1;
+GLint lightDebugMode = 3;
+GLint attenuationMode = 2;
+GLint saoSamples = 12;
+GLint saoTurns = 7;
+GLint saoBlurSize = 4;
+GLint motionBlurMaxSamples = 32;
+
+GLfloat lastX = WIDTH / 2;
+GLfloat lastY = HEIGHT / 2;
+GLfloat deltaTime = 0.0f;
+GLfloat lastFrame = 0.0f;
+GLfloat deltaGeometryTime = 0.0f;
+GLfloat deltaLightingTime = 0.0f;
+GLfloat deltaSAOTime = 0.0f;
+GLfloat deltaPostprocessTime = 0.0f;
+GLfloat deltaForwardTime = 0.0f;
+GLfloat deltaGUITime = 0.0f;
+GLfloat materialRoughness = 0.01f;
+GLfloat materialMetallicity = 0.02f;
+GLfloat ambientIntensity = 0.005f;
+GLfloat saoRadius = 0.3f;
+GLfloat saoBias = 0.001f;
+GLfloat saoScale = 0.7f;
+GLfloat saoContrast = 0.8f;
+GLfloat lightPointRadius1 = 3.0f;
+GLfloat lightPointRadius2 = 3.0f;
+GLfloat lightPointRadius3 = 3.0f;
+GLfloat cameraAperture = 16.0f;
+GLfloat cameraShutterSpeed = 0.5f;
+GLfloat cameraISO = 1000.0f;
+GLfloat modelRotationSpeed = 0.0f;
+
 bool cameraMode;
 bool pointMode = false;
 bool directionalMode = false;
@@ -39,18 +87,76 @@ bool firstMouse = true;
 bool guiIsOpen = true;
 bool keys[1024];
 
-GLfloat lastFrame = 0.0f;
-GLfloat deltaTime = 0.0f;
+glm::vec3 albedoColor = glm::vec3(1.0f);
+glm::vec3 materialF0 = glm::vec3(0.04f);  // UE4 dielectric
+glm::vec3 lightPointPosition1 = glm::vec3(1.5f, 0.75f, 1.0f);
+glm::vec3 lightPointPosition2 = glm::vec3(-1.5f, 1.0f, 1.0f);
+glm::vec3 lightPointPosition3 = glm::vec3(0.0f, 0.75f, -1.2f);
+glm::vec3 lightPointColor1 = glm::vec3(1.0f);
+glm::vec3 lightPointColor2 = glm::vec3(1.0f);
+glm::vec3 lightPointColor3 = glm::vec3(1.0f);
+glm::vec3 lightDirectionalDirection1 = glm::vec3(-0.2f, -1.0f, -0.3f);
+glm::vec3 lightDirectionalColor1 = glm::vec3(1.0f);
+glm::vec3 modelPosition = glm::vec3(0.0f);
+glm::vec3 modelRotationAxis = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 modelScale = glm::vec3(0.1f);
 
-GLuint gBufferView = 1;
-GLuint lastX = 0;
-GLuint lastY = 0;
+glm::mat4 projViewModel;
+glm::mat4 prevProjViewModel = projViewModel;
+glm::mat4 envMapProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+glm::mat4 envMapView[] =
+{
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+    glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+};
+
+//Shader gBufferShader;
+//Shader latlongToCubeShader;
+Shader simpleShader;
+//Shader lightingBRDFShader;
+//Shader irradianceIBLShader;
+//Shader prefilterIBLShader;
+//Shader integrateIBLShader;
+//Shader firstpassPPShader;
+//Shader saoShader;
+//Shader saoBlurShader;
+
+Texture objectAlbedo;
+Texture objectNormal;
+Texture objectRoughness;
+Texture objectMetalness;
+Texture objectAO;
+Texture envMapHDR;
+Texture envMapCube;
+Texture envMapIrradiance;
+Texture envMapPrefilter;
+Texture envMapLUT;
+
+Material pbrMat;
+
+Model objectModel;
+
+Light lightPoint1;
+Light lightPoint2;
+Light lightPoint3;
+Light lightDirectional1;
+
+Shape quadRender;
+Shape envCubeRender;
 
 //---------------
 // setting
 //---------------
 void imguiSetup();
 void cameraMove();
+void gBufferSetup();
+void saoSetup();
+void postprocessSetup();
+void iblSetup();
 
 //---------------
 // GLFW Callbacks
@@ -71,6 +177,7 @@ int main(int, char**)
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
@@ -83,14 +190,23 @@ int main(int, char**)
 	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-    GLFWwindow* window = glfwCreateWindow(mode->width, mode->redBits, "Awesome Renderer", monitor, NULL);
+    GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "Awesome Renderer", monitor, NULL);
 #else
-	GLFWwindow* window = glfwCreateWindow(1280, 720, "Awesome Renderer", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Awesome Renderer", NULL, NULL);
 #endif
 
     glfwMakeContextCurrent(window);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     glfwSwapInterval(1); // Enable vsync
+
+	//gl init
 	gladLoadGL();
+
+    //glViewport(0, 0, WIDTH, HEIGHT);
+    //glEnable(GL_DEPTH_TEST);
+    //glDepthFunc(GL_LESS);
+    //glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+
 
     // Setup ImGui binding
     ImGui::CreateContext();
@@ -107,7 +223,74 @@ int main(int, char**)
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
 
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+    ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+    //----------
+    // Shader(s)
+    //----------
+	simpleShader.setShader("resources/shaders/lighting/simple.vert", "resources/shaders/lighting/simple.frag");
+
+    //-----------
+    // Textures(s)
+    //-----------
+    objectAlbedo.setTexture("resources/textures/pbr/rustediron/rustediron_albedo.png", "ironAlbedo", true);
+    objectNormal.setTexture("resources/textures/pbr/rustediron/rustediron_normal.png", "ironNormal", true);
+    objectRoughness.setTexture("resources/textures/pbr/rustediron/rustediron_roughness.png", "ironRoughness", true);
+    objectMetalness.setTexture("resources/textures/pbr/rustediron/rustediron_metalness.png", "ironMetalness", true);
+    objectAO.setTexture("resources/textures/pbr/rustediron/rustediron_ao.png", "ironAO", true);
+
+    envMapHDR.setTextureHDR("resources/textures/hdr/appart.hdr", "appartHDR", true);
+
+    envMapCube.setTextureCube(512, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
+    envMapIrradiance.setTextureCube(32, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR);
+    envMapPrefilter.setTextureCube(128, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
+    envMapPrefilter.computeTexMipmap();
+    envMapLUT.setTextureHDR(512, 512, GL_RG, GL_RG16F, GL_FLOAT, GL_LINEAR);
+
+    //---------
+    // Model(s)
+    //---------
+    objectModel.loadModel("resources/models/shaderball/shaderball.obj");
+
+    //---------------
+    // Shape(s)
+    //---------------
+    envCubeRender.setShape("cube", glm::vec3(0.0f));
+    quadRender.setShape("quad", glm::vec3(0.0f));
+
+    //----------------
+    // Light source(s)
+    //----------------
+    lightPoint1.setLight(lightPointPosition1, glm::vec4(lightPointColor1, 1.0f), lightPointRadius1, true);
+    lightPoint2.setLight(lightPointPosition2, glm::vec4(lightPointColor2, 1.0f), lightPointRadius2, true);
+    lightPoint3.setLight(lightPointPosition3, glm::vec4(lightPointColor3, 1.0f), lightPointRadius3, true);
+
+    lightDirectional1.setLight(lightDirectionalDirection1, glm::vec4(lightDirectionalColor1, 1.0f));
+
+	
+    //---------------
+    // G-Buffer setup
+    //---------------
+    gBufferSetup();
+
+
+    //------------
+    // SAO setup
+    //------------
+    saoSetup();
+
+
+    //---------------------
+    // Postprocessing setup
+    //---------------------
+    postprocessSetup();
+
+
+    //----------
+    // IBL setup
+    //----------
+    iblSetup();
+
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -125,7 +308,7 @@ int main(int, char**)
         int display_w, display_h;
         glfwGetFramebufferSize(window, &display_w, &display_h);
         glViewport(0, 0, display_w, display_h);
-        glClearColor(clear_color.x, clear_color.y, clear_color.z, clear_color.w);
+        glClearColor(clearColor.x, clearColor.y, clearColor.z, clearColor.w);
         glClear(GL_COLOR_BUFFER_BIT);
         ImGui::Render();
         ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
@@ -285,3 +468,25 @@ void cameraMove()
     if (keys[GLFW_KEY_D])
         camera.keyboardCall(RIGHT, deltaTime);
 }
+
+void gBufferSetup()
+{
+
+}
+
+void saoSetup()
+{
+
+}
+
+void postprocessSetup()
+{
+
+}
+
+void iblSetup()
+{
+
+}
+
+

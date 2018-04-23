@@ -9,15 +9,21 @@
 
 #include <imgui.h>
 #include <imgui_impl_glfw_gl3.h>
-#include <glad\glad.h>
-#include <GLFW\glfw3.h>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include "engine\renderer\the_renderer.h"
+#include "engine/renderer/the_renderer.h"
 
 #include <stdio.h>
+
+#include <direct.h>
+#include<iostream>
+#include<string>
+
+#define GetCurrentDir _getcwd
 
 using namespace PBR;
 
@@ -149,6 +155,15 @@ Shape quadRender;
 Shape envCubeRender;
 
 //---------------
+// GLFW Callbacks
+//---------------
+static void errorCallback(int error, const char * description);
+void keyCallback(GLFWwindow * window, int key, int scancode, int action, int mode);
+void mouseCallback(GLFWwindow * window, double xpos, double ypos);
+void mouseButtonCallback(GLFWwindow * window, int button, int action, int mods);
+void scrollCallback(GLFWwindow * window, double xoffset, double yoffset);
+
+//---------------
 // setting
 //---------------
 void imguiSetup();
@@ -158,20 +173,12 @@ void saoSetup();
 void postprocessSetup();
 void iblSetup();
 
-//---------------
-// GLFW Callbacks
-//---------------
-
-static void error_callback(int error, const char* description);
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode);
-void mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods);
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
+std::string getCurrentWorkingDir(void);
 
 int main(int, char**)
 {
     // Setup window
-    glfwSetErrorCallback(error_callback);
+    glfwSetErrorCallback(errorCallback);
     if (!glfwInit())
         return 1;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -214,10 +221,10 @@ int main(int, char**)
 
 	//window callback
     ImGui_ImplGlfwGL3_Init(window, true);
-	glfwSetKeyCallback(window, key_callback);
-    glfwSetCursorPosCallback(window, mouse_callback);
-    glfwSetMouseButtonCallback(window, mouse_button_callback);
-    glfwSetScrollCallback(window, scroll_callback);
+	glfwSetKeyCallback(window, keyCallback);
+    glfwSetCursorPosCallback(window, mouseCallback);
+    glfwSetMouseButtonCallback(window, mouseButtonCallback);
+    glfwSetScrollCallback(window, scrollCallback);
 
     // Setup style
     ImGui::StyleColorsDark();
@@ -225,47 +232,49 @@ int main(int, char**)
 
     ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-    //----------
-    // Shader(s)
-    //----------
-	simpleShader.setShader("resources/shaders/lighting/simple.vert", "resources/shaders/lighting/simple.frag");
+	std::cout << getCurrentWorkingDir() << std::endl;
 
-    //-----------
-    // Textures(s)
-    //-----------
-    objectAlbedo.setTexture("resources/textures/pbr/rustediron/rustediron_albedo.png", "ironAlbedo", true);
-    objectNormal.setTexture("resources/textures/pbr/rustediron/rustediron_normal.png", "ironNormal", true);
-    objectRoughness.setTexture("resources/textures/pbr/rustediron/rustediron_roughness.png", "ironRoughness", true);
-    objectMetalness.setTexture("resources/textures/pbr/rustediron/rustediron_metalness.png", "ironMetalness", true);
-    objectAO.setTexture("resources/textures/pbr/rustediron/rustediron_ao.png", "ironAO", true);
+	//----------
+   	// Shader(s)
+   	//----------
+   	simpleShader.setShader("../resources/shaders/lighting/simple.vert", "../resources/shaders/lighting/simple.frag");
 
-    envMapHDR.setTextureHDR("resources/textures/hdr/appart.hdr", "appartHDR", true);
+   	//-----------
+   	// Textures(s)
+   	//-----------
+   	objectAlbedo.setTexture("../resources/textures/pbr/rustediron/rustediron_albedo.png", "ironAlbedo", true);
+   	objectNormal.setTexture("../resources/textures/pbr/rustediron/rustediron_normal.png", "ironNormal", true);
+   	objectRoughness.setTexture("../resources/textures/pbr/rustediron/rustediron_roughness.png", "ironRoughness", true);
+   	objectMetalness.setTexture("../resources/textures/pbr/rustediron/rustediron_metalness.png", "ironMetalness", true);
+   	objectAO.setTexture("../resources/textures/pbr/rustediron/rustediron_ao.png", "ironAO", true);
 
-    envMapCube.setTextureCube(512, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
-    envMapIrradiance.setTextureCube(32, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR);
-    envMapPrefilter.setTextureCube(128, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
-    envMapPrefilter.computeTexMipmap();
-    envMapLUT.setTextureHDR(512, 512, GL_RG, GL_RG16F, GL_FLOAT, GL_LINEAR);
+   	envMapHDR.setTextureHDR("../resources/textures/hdr/appart.hdr", "appartHDR", true);
 
-    //---------
-    // Model(s)
-    //---------
-    objectModel.loadModel("resources/models/shaderball/shaderball.obj");
+   	envMapCube.setTextureCube(512, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
+   	envMapIrradiance.setTextureCube(32, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR);
+   	envMapPrefilter.setTextureCube(128, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
+   	envMapPrefilter.computeTexMipmap();
+   	envMapLUT.setTextureHDR(512, 512, GL_RG, GL_RG16F, GL_FLOAT, GL_LINEAR);
 
-    //---------------
-    // Shape(s)
-    //---------------
-    envCubeRender.setShape("cube", glm::vec3(0.0f));
-    quadRender.setShape("quad", glm::vec3(0.0f));
+   	//---------
+   	// Model(s)
+   	//---------
+   	objectModel.loadModel("../resources/models/shaderball/shaderball.obj");
 
-    //----------------
-    // Light source(s)
-    //----------------
-    lightPoint1.setLight(lightPointPosition1, glm::vec4(lightPointColor1, 1.0f), lightPointRadius1, true);
-    lightPoint2.setLight(lightPointPosition2, glm::vec4(lightPointColor2, 1.0f), lightPointRadius2, true);
-    lightPoint3.setLight(lightPointPosition3, glm::vec4(lightPointColor3, 1.0f), lightPointRadius3, true);
+   	//---------------
+   	// Shape(s)
+   	//---------------
+   	envCubeRender.setShape("cube", glm::vec3(0.0f));
+   	quadRender.setShape("quad", glm::vec3(0.0f));
 
-    lightDirectional1.setLight(lightDirectionalDirection1, glm::vec4(lightDirectionalColor1, 1.0f));
+   	//----------------
+   	// Light source(s)
+   	//----------------
+   	lightPoint1.setLight(lightPointPosition1, glm::vec4(lightPointColor1, 1.0f), lightPointRadius1, true);
+   	lightPoint2.setLight(lightPointPosition2, glm::vec4(lightPointColor2, 1.0f), lightPointRadius2, true);
+   	lightPoint3.setLight(lightPointPosition3, glm::vec4(lightPointColor3, 1.0f), lightPointRadius3, true);
+
+   	lightDirectional1.setLight(lightDirectionalDirection1, glm::vec4(lightDirectionalColor1, 1.0f));
 
 	
     //---------------
@@ -291,6 +300,25 @@ int main(int, char**)
     //----------
     iblSetup();
 
+    //------------------------------
+    // Queries setting for profiling
+    //------------------------------
+    GLuint64 startGeometryTime, startLightingTime, startSAOTime, startPostprocessTime, startForwardTime, startGUITime;
+    GLuint64 stopGeometryTime, stopLightingTime, stopSAOTime, stopPostprocessTime, stopForwardTime, stopGUITime;
+
+    unsigned int queryIDGeometry[2];
+    unsigned int queryIDLighting[2];
+    unsigned int queryIDSAO[2];
+    unsigned int queryIDPostprocess[2];
+    unsigned int queryIDForward[2];
+    unsigned int queryIDGUI[2];
+
+    glGenQueries(2, queryIDGeometry);
+    glGenQueries(2, queryIDLighting);
+    glGenQueries(2, queryIDSAO);
+    glGenQueries(2, queryIDPostprocess);
+    glGenQueries(2, queryIDForward);
+    glGenQueries(2, queryIDGUI);
 
     // Main loop
     while (!glfwWindowShouldClose(window))
@@ -300,9 +328,17 @@ int main(int, char**)
         lastFrame = currentFrame;
 
 		glfwPollEvents();
+		cameraMove();
 
 		//setting
 		imguiSetup();
+
+		//------------------------
+        // Geometry Pass rendering
+        //------------------------
+        glQueryCounter(queryIDGeometry[0], GL_TIMESTAMP);
+        glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // Rendering
         int display_w, display_h;
@@ -323,13 +359,13 @@ int main(int, char**)
     return 0;
 }
 
-static void error_callback(int error, const char* description)
+static void errorCallback(int error, const char* description)
 {
     fprintf(stderr, "Error %d: %s\n", error, description);
 }
 
 
-void key_callback(GLFWwindow* window, int key, int scancode, int action, int mode)
+void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mode)
 {
     if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
         glfwSetWindowShouldClose(window, GL_TRUE);
@@ -378,7 +414,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 }
 
 
-void mouse_callback(GLFWwindow* window, double xpos, double ypos)
+void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 {
     if (firstMouse)
     {
@@ -397,7 +433,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 }
 
 
-void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
+void mouseButtonCallback(GLFWwindow* window, int button, int action, int mods)
 {
     if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS)
         cameraMode = true;
@@ -406,7 +442,7 @@ void mouse_button_callback(GLFWwindow* window, int button, int action, int mods)
 }
 
 
-void scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
+void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 {
     if (cameraMode)
         camera.scrollCall(yoffset);
@@ -489,4 +525,10 @@ void iblSetup()
 
 }
 
+std::string getCurrentWorkingDir( void ) {
+  char buff[FILENAME_MAX];
+  GetCurrentDir( buff, FILENAME_MAX );
+  std::string current_working_dir(buff);
+  return current_working_dir;
+}
 

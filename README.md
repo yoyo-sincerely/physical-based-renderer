@@ -28,15 +28,15 @@ cmake -G "Visual Studio 15 2017 Win64" ..
 ## Features
 
 - Camera
-	- Movements(ÒÆ¶¯)
-	- Zoom in/out(·Å´ó/ËõĞ¡)
-	- Exposure(ÆØ¹â) :
-		- Aperture(¹âÈ¦)
-		- Shutter speed(¿ìÃÅËÙÂÊ)
-		- ISO(¸Ğ¹â¶È)
+	- Movements(ï¿½Æ¶ï¿½)
+	- Zoom in/out(ï¿½Å´ï¿½/ï¿½ï¿½Ğ¡)
+	- Exposure(ï¿½Ø¹ï¿½) :
+		- Aperture(ï¿½ï¿½È¦)
+		- Shutter speed(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
+		- ISO(ï¿½Ğ¹ï¿½ï¿½)
 - Texture
 	- Init/loading/binding by stb library
-	- Anisotropic Filtering(¸÷ÏîÒìĞÔÀ©É¢ÂË²¨)
+	- Anisotropic Filtering(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É¢ï¿½Ë²ï¿½)
 	- HDR
 	- Cubemap
 - Material

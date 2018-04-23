@@ -76,6 +76,21 @@ src/engine/real_time_pbr/mesh/*.cpp
 src/engine/real_time_pbr/resources/*.cpp
 )
 
+file(GLOB PROJECT_SHADERS 
+resources/shaders/*.glsl
+resources/shaders/*.frag
+resources/shaders/*.vert
+resources/shaders/lighting/*.glsl
+resources/shaders/lighting/*.frag
+resources/shaders/lighting/*.vert
+resources/shaders/lighting/ibl/*.glsl
+resources/shaders/lighting/ibl/*.frag
+resources/shaders/lighting/ibl/*.vert
+resources/shaders/postprocess/*.glsl
+resources/shaders/postprocess/*.frag
+resources/shaders/postprocess/*.vert
+)
+
 FILE(GLOB PROJECT_CONFIGS
 CmakeLists.txt
 .gitignore
@@ -89,6 +104,7 @@ source_group("API" FILES ${API_SOURCES})
 source_group("Headers" FILES ${PROJECT_HEAD})
 source_group("Sources" FILES ${PROJECT_SOURCES})
 source_group("RealtimePBR" FILES ${REAL_TIME_PBR})
+source_group("Shaders" FILES ${PROJECT_SHADERS})
 
 add_executable(AwesomeRenderer
 ${PROJECT_CONFIGS}
@@ -96,6 +112,7 @@ ${PROJECT_HEAD}
 ${PROJECT_SOURCES}
 ${API_SOURCES}
 ${REAL_TIME_PBR}
+${PROJECT_SHADERS}
 src/main.cpp
 )
 

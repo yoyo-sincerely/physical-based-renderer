@@ -50,11 +50,11 @@ cmake -G "Visual Studio 15 2017 Win64" ..
 	- Cubemap
 - Material
 	- PBR material pipeline
-		- Albedo
-		- Normal
-		- Roughness
-		- Matelness
-		- AO
+		- Albedo(反射率)
+		- Normal(法线)
+		- Roughness(粗糙度)
+		- Matelness(金属度)
+		- AO(环境光遮蔽)
 - Model
 	- Load model by Assimp
 

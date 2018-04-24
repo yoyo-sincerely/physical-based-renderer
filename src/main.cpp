@@ -120,16 +120,16 @@ glm::mat4 envMapView[] =
     glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
 };
 
-//Shader gBufferShader;
-//Shader latlongToCubeShader;
+Shader gBufferShader;
+Shader latlongToCubeShader;
 Shader simpleShader;
-//Shader lightingBRDFShader;
-//Shader irradianceIBLShader;
-//Shader prefilterIBLShader;
-//Shader integrateIBLShader;
-//Shader firstpassPPShader;
-//Shader saoShader;
-//Shader saoBlurShader;
+Shader lightingBRDFShader;
+Shader irradianceIBLShader;
+Shader prefilterIBLShader;
+Shader integrateIBLShader;
+Shader firstpassPPShader;
+Shader saoShader;
+Shader saoBlurShader;
 
 Texture objectAlbedo;
 Texture objectNormal;
@@ -238,6 +238,19 @@ int main(int, char**)
    	// Shader(s)
    	//----------
    	simpleShader.setShader("../resources/shaders/lighting/simple.vert", "../resources/shaders/lighting/simple.frag");
+    gBufferShader.setShader("resources/shaders/gBuffer.vert", "resources/shaders/gBuffer.frag");
+    latlongToCubeShader.setShader("resources/shaders/latlongToCube.vert", "resources/shaders/latlongToCube.frag");
+
+    simpleShader.setShader("resources/shaders/lighting/simple.vert", "resources/shaders/lighting/simple.frag");
+    lightingBRDFShader.setShader("resources/shaders/lighting/lightingBRDF.vert", "resources/shaders/lighting/lightingBRDF.frag");
+    irradianceIBLShader.setShader("resources/shaders/lighting/irradianceIBL.vert", "resources/shaders/lighting/irradianceIBL.frag");
+    prefilterIBLShader.setShader("resources/shaders/lighting/prefilterIBL.vert", "resources/shaders/lighting/prefilterIBL.frag");
+    integrateIBLShader.setShader("resources/shaders/lighting/integrateIBL.vert", "resources/shaders/lighting/integrateIBL.frag");
+
+    firstpassPPShader.setShader("resources/shaders/postprocess/postprocess.vert", "resources/shaders/postprocess/firstpass.frag");
+    saoShader.setShader("resources/shaders/postprocess/sao.vert", "resources/shaders/postprocess/sao.frag");
+    saoBlurShader.setShader("resources/shaders/postprocess/sao.vert", "resources/shaders/postprocess/saoBlur.frag");
+
 
    	//-----------
    	// Textures(s)
@@ -563,17 +576,169 @@ void gBufferSetup()
 
 void saoSetup()
 {
+	// SAO Buffer
+    glGenFramebuffers(1, &saoFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, saoFBO);
+    glGenTextures(1, &saoBuffer);
+    glBindTexture(GL_TEXTURE_2D, saoBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, saoBuffer, 0);
 
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "SAO Framebuffer not complete !" << std::endl;
+
+    // SAO Blur Buffer
+    glGenFramebuffers(1, &saoBlurFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, saoBlurFBO);
+    glGenTextures(1, &saoBlurBuffer);
+    glBindTexture(GL_TEXTURE_2D, saoBlurBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WIDTH, HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, saoBlurBuffer, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "SAO Blur Framebuffer not complete !" << std::endl;
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 void postprocessSetup()
 {
+	// Post-processing Buffer
+    glGenFramebuffers(1, &postprocessFBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, postprocessFBO);
 
+    glGenTextures(1, &postprocessBuffer);
+    glBindTexture(GL_TEXTURE_2D, postprocessBuffer);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, postprocessBuffer, 0);
+
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cout << "Postprocess Framebuffer not complete !" << std::endl;
 }
 
 void iblSetup()
 {
+	// Latlong to Cubemap conversion
+    glGenFramebuffers(1, &envToCubeFBO);
+    glGenRenderbuffers(1, &envToCubeRBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, envToCubeFBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, envToCubeRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, envMapCube.getTexWidth(), envMapCube.getTexHeight());
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, envToCubeRBO);
 
+    latlongToCubeShader.useShader();
+
+    glUniformMatrix4fv(glGetUniformLocation(latlongToCubeShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(envMapProjection));
+    glActiveTexture(GL_TEXTURE0);
+    envMapHDR.useTexture();
+
+    glViewport(0, 0, envMapCube.getTexWidth(), envMapCube.getTexHeight());
+    glBindFramebuffer(GL_FRAMEBUFFER, envToCubeFBO);
+
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+        glUniformMatrix4fv(glGetUniformLocation(latlongToCubeShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(envMapView[i]));
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envMapCube.getTexID(), 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        envCubeRender.drawShape();
+    }
+
+    envMapCube.computeTexMipmap();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Diffuse irradiance capture
+    glGenFramebuffers(1, &irradianceFBO);
+    glGenRenderbuffers(1, &irradianceRBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, irradianceFBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, irradianceRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, envMapIrradiance.getTexWidth(), envMapIrradiance.getTexHeight());
+
+    irradianceIBLShader.useShader();
+
+    glUniformMatrix4fv(glGetUniformLocation(irradianceIBLShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(envMapProjection));
+    glActiveTexture(GL_TEXTURE0);
+    envMapCube.useTexture();
+
+    glViewport(0, 0, envMapIrradiance.getTexWidth(), envMapIrradiance.getTexHeight());
+    glBindFramebuffer(GL_FRAMEBUFFER, irradianceFBO);
+
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+        glUniformMatrix4fv(glGetUniformLocation(irradianceIBLShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(envMapView[i]));
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envMapIrradiance.getTexID(), 0);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+        envCubeRender.drawShape();
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // Prefilter cubemap
+    prefilterIBLShader.useShader();
+
+    glUniformMatrix4fv(glGetUniformLocation(prefilterIBLShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(envMapProjection));
+    envMapCube.useTexture();
+
+    glGenFramebuffers(1, &prefilterFBO);
+    glGenRenderbuffers(1, &prefilterRBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, prefilterFBO);
+
+    unsigned int maxMipLevels = 5;
+
+    for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
+    {
+        unsigned int mipWidth = envMapPrefilter.getTexWidth() * std::pow(0.5, mip);
+        unsigned int mipHeight = envMapPrefilter.getTexHeight() * std::pow(0.5, mip);
+
+        glBindRenderbuffer(GL_RENDERBUFFER, prefilterRBO);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+
+        glViewport(0, 0, mipWidth, mipHeight);
+
+        float roughness = (float)mip / (float)(maxMipLevels - 1);
+
+        glUniform1f(glGetUniformLocation(prefilterIBLShader.Program, "roughness"), roughness);
+        glUniform1f(glGetUniformLocation(prefilterIBLShader.Program, "cubeResolutionWidth"), envMapPrefilter.getTexWidth());
+        glUniform1f(glGetUniformLocation(prefilterIBLShader.Program, "cubeResolutionHeight"), envMapPrefilter.getTexHeight());
+
+        for (unsigned int i = 0; i < 6; ++i)
+        {
+            glUniformMatrix4fv(glGetUniformLocation(prefilterIBLShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(envMapView[i]));
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, envMapPrefilter.getTexID(), mip);
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+            envCubeRender.drawShape();
+        }
+    }
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    // BRDF LUT
+    glGenFramebuffers(1, &brdfLUTFBO);
+    glGenRenderbuffers(1, &brdfLUTRBO);
+    glBindFramebuffer(GL_FRAMEBUFFER, brdfLUTFBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, brdfLUTRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, envMapLUT.getTexWidth(), envMapLUT.getTexHeight());
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, envMapLUT.getTexID(), 0);
+
+    glViewport(0, 0, envMapLUT.getTexWidth(), envMapLUT.getTexHeight());
+    integrateIBLShader.useShader();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    quadRender.drawShape();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    glViewport(0, 0, WIDTH, HEIGHT);
 }
 
 std::string getCurrentWorkingDir( void ) {

@@ -120,6 +120,6 @@ target_link_libraries(${PROJECT_NAME} glfw)
 target_link_libraries(${PROJECT_NAME} assimp)
 
 add_definitions(-DGLFW_INCLUDE_NONE
-	-DFULL_SCREEN
+	-DWINDOWS
     -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
 link_directories(${AwesomeRenderer_SOURCE_DIR})

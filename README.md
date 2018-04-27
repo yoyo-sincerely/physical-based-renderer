@@ -57,6 +57,14 @@ cmake -G "Visual Studio 15 2017 Win64" ..
 		- AO(环境光遮蔽)
 - Model
 	- Load model by Assimp
+- PBR Pipline
+	- BRDF
+		- Cook-Torrance model
+		- Diffuse : Lambertian/Disney
+- Utility
+	- GUI using ImGui
+	- GPU profiling
+	- G-Buffer visualization for debugging purpose
 
 ## Dependencies
 

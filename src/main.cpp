@@ -87,7 +87,7 @@ GLfloat cameraISO = 1000.0f;
 GLfloat modelRotationSpeed = 0.0f;
 
 bool cameraMode;
-bool pointMode = false;
+bool pointMode = true;
 bool directionalMode = false;
 bool iblMode = true;
 bool saoMode = false;
@@ -172,6 +172,7 @@ void scrollCallback(GLFWwindow * window, double xoffset, double yoffset);
 // setting
 //---------------
 void imguiSetup();
+void imguiTest();
 void cameraMove();
 void gBufferSetup();
 void saoSetup();
@@ -380,7 +381,8 @@ int main(int, char**)
 		cameraMove();
 
 		//setting
-		imguiSetup();
+		//imguiSetup();
+		imguiTest();
 
 		//------------------------
         // Geometry Pass rendering
@@ -767,6 +769,296 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
         camera.scrollCall(yoffset);
 }
 
+void imguiTest()
+{
+    ImGui_ImplGlfwGL3_NewFrame();
+
+    ImGui::Begin("GLEngine", &guiIsOpen, ImVec2(0, 0), 0.5f, ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::SetWindowSize(ImVec2(350, HEIGHT));
+
+    if (ImGui::CollapsingHeader("Rendering", 0, true, true))
+    {
+        if (ImGui::TreeNode("Material"))
+        {
+            ImGui::ColorEdit3("Albedo", (float*)&albedoColor);
+            ImGui::SliderFloat("Roughness", &materialRoughness, 0.0f, 1.0f);
+            ImGui::SliderFloat("Metalness", &materialMetallicity, 0.0f, 1.0f);
+            ImGui::SliderFloat3("F0", (float*)&materialF0, 0.0f, 1.0f);
+            ImGui::SliderFloat("Ambient Intensity", &ambientIntensity, 0.0f, 1.0f);
+
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNode("Lighting"))
+        {
+            if (ImGui::TreeNode("Mode"))
+            {
+                ImGui::Checkbox("Point", &pointMode);
+                ImGui::Checkbox("Directional", &directionalMode);
+                ImGui::Checkbox("Image-Based Lighting", &iblMode);
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Point"))
+            {
+                if (ImGui::TreeNode("Position"))
+                {
+                    ImGui::SliderFloat3("Point 1", (float*)&lightPointPosition1, -5.0f, 5.0f);
+                    ImGui::SliderFloat3("Point 2", (float*)&lightPointPosition2, -5.0f, 5.0f);
+                    ImGui::SliderFloat3("Point 3", (float*)&lightPointPosition3, -5.0f, 5.0f);
+
+                    ImGui::TreePop();
+                }
+
+                if (ImGui::TreeNode("Color"))
+                {
+                    ImGui::ColorEdit3("Point 1", (float*)&lightPointColor1);
+                    ImGui::ColorEdit3("Point 2", (float*)&lightPointColor2);
+                    ImGui::ColorEdit3("Point 3", (float*)&lightPointColor3);
+
+                    ImGui::TreePop();
+                }
+
+                if (ImGui::TreeNode("Radius"))
+                {
+                    ImGui::SliderFloat("Point 1", &lightPointRadius1, 0.0f, 10.0f);
+                    ImGui::SliderFloat("Point 2", &lightPointRadius2, 0.0f, 10.0f);
+                    ImGui::SliderFloat("Point 3", &lightPointRadius3, 0.0f, 10.0f);
+
+                    ImGui::TreePop();
+                }
+
+                if (ImGui::TreeNode("Attenuation"))
+                {
+                    ImGui::RadioButton("Quadratic", &attenuationMode, 1);
+                    ImGui::RadioButton("UE4", &attenuationMode, 2);
+
+                    ImGui::TreePop();
+                }
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Directional"))
+            {
+                if (ImGui::TreeNode("Direction"))
+                {
+                    ImGui::SliderFloat3("Direction 1", (float*)&lightDirectionalDirection1, -5.0f, 5.0f);
+
+                    ImGui::TreePop();
+                }
+
+                if (ImGui::TreeNode("Color"))
+                {
+                    ImGui::ColorEdit3("Direct. 1", (float*)&lightDirectionalColor1);
+
+                    ImGui::TreePop();
+                }
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Environment map"))
+            {
+                if (ImGui::Button("Appartment"))
+                {
+                    envMapHDR.setTextureHDR("resources/textures/hdr/appart.hdr", "appartHDR", true);
+                    iblSetup();
+                }
+
+                if (ImGui::Button("Pisa"))
+                {
+                    envMapHDR.setTextureHDR("resources/textures/hdr/pisa.hdr", "pisaHDR", true);
+                    iblSetup();
+                }
+
+                if (ImGui::Button("Canyon"))
+                {
+                    envMapHDR.setTextureHDR("resources/textures/hdr/canyon.hdr", "canyonHDR", true);
+                    iblSetup();
+                }
+
+                if (ImGui::Button("Loft"))
+                {
+                    envMapHDR.setTextureHDR("resources/textures/hdr/loft.hdr", "loftHDR", true);
+                    iblSetup();
+                }
+
+                if (ImGui::Button("Path"))
+                {
+                    envMapHDR.setTextureHDR("resources/textures/hdr/path.hdr", "pathHDR", true);
+                    iblSetup();
+                }
+
+                if (ImGui::Button("Circus"))
+                {
+                    envMapHDR.setTextureHDR("resources/textures/hdr/circus.hdr", "circusHDR", true);
+                    iblSetup();
+                }
+
+                ImGui::TreePop();
+            }
+
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNode("Post processing"))
+        {
+            if (ImGui::TreeNode("SAO"))
+            {
+                ImGui::Checkbox("Enable", &saoMode);
+
+                ImGui::SliderInt("Samples", &saoSamples, 0, 64);
+                ImGui::SliderFloat("Radius", &saoRadius, 0.0f, 3.0f);
+                ImGui::SliderInt("Turns", &saoTurns, 0, 16);
+                ImGui::SliderFloat("Bias", &saoBias, 0.0f, 0.1f);
+                ImGui::SliderFloat("Scale", &saoScale, 0.0f, 3.0f);
+                ImGui::SliderFloat("Contrast", &saoContrast, 0.0f, 3.0f);
+                ImGui::SliderInt("Blur Size", &saoBlurSize, 0, 8);
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("FXAA"))
+            {
+                ImGui::Checkbox("Enable", &fxaaMode);
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Motion Blur"))
+            {
+                ImGui::Checkbox("Enable", &motionBlurMode);
+                ImGui::SliderInt("Max Samples", &motionBlurMaxSamples, 1, 128);
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Tonemapping"))
+            {
+                ImGui::RadioButton("Reinhard", &tonemappingMode, 1);
+                ImGui::RadioButton("Filmic", &tonemappingMode, 2);
+                ImGui::RadioButton("Uncharted", &tonemappingMode, 3);
+
+                ImGui::TreePop();
+            }
+
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNode("Camera"))
+        {
+            ImGui::SliderFloat("Aperture", &cameraAperture, 1.0f, 32.0f);
+            ImGui::SliderFloat("Shutter Speed", &cameraShutterSpeed, 0.001f, 1.0f);
+            ImGui::SliderFloat("ISO", &cameraISO, 100.0f, 3200.0f);
+
+            ImGui::TreePop();
+        }
+
+        if (ImGui::TreeNode("Object"))
+        {
+            ImGui::SliderFloat3("Position", (float*)&modelPosition, -5.0f, 5.0f);
+            ImGui::SliderFloat("Rotation Speed", &modelRotationSpeed, 0.0f, 50.0f);
+            ImGui::SliderFloat3("Rotation Axis", (float*)&modelRotationAxis, 0.0f, 1.0f);
+
+            if (ImGui::TreeNode("Model"))
+            {
+                if (ImGui::Button("Sphere"))
+                {
+                    objectModel.~Model();
+                    objectModel.loadModel("resources/models/sphere/sphere.obj");
+                    modelScale = glm::vec3(0.6f);
+                }
+
+                if (ImGui::Button("Teapot"))
+                {
+                    objectModel.~Model();
+                    objectModel.loadModel("resources/models/teapot/teapot.obj");
+                    modelScale = glm::vec3(0.6f);
+                }
+
+                if (ImGui::Button("Shader ball"))
+                {
+                    objectModel.~Model();
+                    objectModel.loadModel("resources/models/shaderball/shaderball.obj");
+                    modelScale = glm::vec3(0.1f);
+                }
+
+                ImGui::TreePop();
+            }
+
+            if (ImGui::TreeNode("Material"))
+            {
+                if (ImGui::Button("Rusted iron"))
+                {
+                    objectAlbedo.setTexture("resources/textures/pbr/rustediron/rustediron_albedo.png", "ironAlbedo", true);
+                    objectNormal.setTexture("resources/textures/pbr/rustediron/rustediron_normal.png", "ironNormal", true);
+                    objectRoughness.setTexture("resources/textures/pbr/rustediron/rustediron_roughness.png", "ironRoughness", true);
+                    objectMetalness.setTexture("resources/textures/pbr/rustediron/rustediron_metalness.png", "ironMetalness", true);
+                    objectAO.setTexture("resources/textures/pbr/rustediron/rustediron_ao.png", "ironAO", true);
+
+                    materialF0 = glm::vec3(0.04f);
+                }
+
+                if (ImGui::Button("Gold"))
+                {
+                    objectAlbedo.setTexture("resources/textures/pbr/gold/gold_albedo.png", "goldAlbedo", true);
+                    objectNormal.setTexture("resources/textures/pbr/gold/gold_normal.png", "goldNormal", true);
+                    objectRoughness.setTexture("resources/textures/pbr/gold/gold_roughness.png", "goldRoughness", true);
+                    objectMetalness.setTexture("resources/textures/pbr/gold/gold_metalness.png", "goldMetalness", true);
+                    objectAO.setTexture("resources/textures/pbr/gold/gold_ao.png", "goldAO", true);
+
+                    materialF0 = glm::vec3(1.0f, 0.72f, 0.29f);
+                }
+
+                if (ImGui::Button("Woodfloor"))
+                {
+                    objectAlbedo.setTexture("resources/textures/pbr/woodfloor/woodfloor_albedo.png", "woodfloorAlbedo", true);
+                    objectNormal.setTexture("resources/textures/pbr/woodfloor/woodfloor_normal.png", "woodfloorNormal", true);
+                    objectRoughness.setTexture("resources/textures/pbr/woodfloor/woodfloor_roughness.png", "woodfloorRoughness", true);
+                    objectMetalness.setTexture("resources/textures/pbr/woodfloor/woodfloor_metalness.png", "woodfloorMetalness", true);
+                    objectAO.setTexture("resources/textures/pbr/woodfloor/woodfloor_ao.png", "woodfloorAO", true);
+
+                    materialF0 = glm::vec3(0.04f);
+                }
+
+                ImGui::TreePop();
+            }
+
+            ImGui::TreePop();
+        }
+    }
+
+    if (ImGui::CollapsingHeader("Profiling", 0, true, true))
+    {
+        ImGui::Text("Geometry Pass :    %.4f ms", deltaGeometryTime);
+        ImGui::Text("Lighting Pass :    %.4f ms", deltaLightingTime);
+        ImGui::Text("SAO Pass :         %.4f ms", deltaSAOTime);
+        ImGui::Text("Postprocess Pass : %.4f ms", deltaPostprocessTime);
+        ImGui::Text("Forward Pass :     %.4f ms", deltaForwardTime);
+        ImGui::Text("GUI Pass :         %.4f ms", deltaGUITime);
+    }
+
+    if (ImGui::CollapsingHeader("Application Info", 0, true, true))
+    {
+        char* glInfos = (char*)glGetString(GL_VERSION);
+        char* hardwareInfos = (char*)glGetString(GL_RENDERER);
+
+        ImGui::Text("OpenGL Version :");
+        ImGui::Text(glInfos);
+        ImGui::Text("Hardware Informations :");
+        ImGui::Text(hardwareInfos);
+        ImGui::Text("\nFramerate %.2f FPS / Frametime %.4f ms", ImGui::GetIO().Framerate, 1000.0f / ImGui::GetIO().Framerate);
+    }
+
+    if (ImGui::CollapsingHeader("About", 0, true, true))
+    {
+        ImGui::Text("GLEngine by Joshua Senouf\n\nEmail: joshua.senouf@gmail.com\nTwitter: @JoshuaSenouf");
+    }
+
+    ImGui::End();
+}
 void imguiSetup() 
 {
 	ImGui_ImplGlfwGL3_NewFrame();
@@ -829,43 +1121,43 @@ void gBufferSetup()
 	glGenFramebuffers(1, &gBuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 
-	// Position
-	glGenFramebuffers(1, &gPosition);
-	glBindTexture(GL_TEXTURE_2D, gPosition);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+    // Position
+    glGenTextures(1, &gPosition);
+    glBindTexture(GL_TEXTURE_2D, gPosition);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
 
-	// Albedo + Roughness
-	glGenFramebuffers(1, &gAlbedo);
-	glBindTexture(GL_TEXTURE_2D, gAlbedo);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gAlbedo, 0);
+    // Albedo + Roughness
+    glGenTextures(1, &gAlbedo);
+    glBindTexture(GL_TEXTURE_2D, gAlbedo);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, WIDTH, HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gAlbedo, 0);
 
-	// Normals + Metalness
-	glGenFramebuffers(1, &gNormal);
-	glBindTexture(GL_TEXTURE_2D, gNormal);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gNormal, 0);
+    // Normals + Metalness
+    glGenTextures(1, &gNormal);
+    glBindTexture(GL_TEXTURE_2D, gNormal);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGBA, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gNormal, 0);
 
-	// Effects (AO + Velocity)
-	glGenFramebuffers(1, &gEffects);
-	glBindTexture(GL_TEXTURE_2D, gEffects);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gEffects, 0);
-	
-	// Define the COLOR_ATTACHMENTS for the G-Buffer
-	GLuint attachments[4] = {GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3};
-	glDrawBuffers(4, attachments);
+    // Effects (AO + Velocity)
+    glGenTextures(1, &gEffects);
+    glBindTexture(GL_TEXTURE_2D, gEffects);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WIDTH, HEIGHT, 0, GL_RGB, GL_FLOAT, NULL);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gEffects, 0);
+
+    // Define the COLOR_ATTACHMENTS for the G-Buffer
+    GLuint attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+    glDrawBuffers(4, attachments);
 
 	// Z-Buffer
 	glGenRenderbuffers(1, &zBuffer);

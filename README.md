@@ -33,6 +33,9 @@ cmake -G "Visual Studio 15 2017 Win64" ..
 | RT3 | AO | Velocity.R | Velocity.G | 
  
 
+## How To Use
+
+
 
 ## Features
 

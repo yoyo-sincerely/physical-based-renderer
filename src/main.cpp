@@ -211,7 +211,7 @@ int main(int, char**)
 #endif
 
     glfwMakeContextCurrent(window);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     glfwSwapInterval(1); // Enable vsync
 
 	//gl init
@@ -265,7 +265,9 @@ int main(int, char**)
    	objectMetalness.setTexture("../resources/textures/pbr/rustediron/rustediron_metalness.png", "ironMetalness", true);
    	objectAO.setTexture("../resources/textures/pbr/rustediron/rustediron_ao.png", "ironAO", true);
 
-   	envMapHDR.setTextureHDR("../resources/textures/hdr/appart.hdr", "appartHDR", true);
+   	//envMapHDR.setTextureHDR("../resources/textures/hdr/appart.hdr", "appartHDR", true);
+   	envMapHDR.setTextureHDR("../resources/textures/hdr/circus.hdr", "circusHDR", true);
+
 
    	envMapCube.setTextureCube(512, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
    	envMapIrradiance.setTextureCube(32, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR);
@@ -1069,7 +1071,8 @@ void imguiTest()
     ImGui::End();
 }
 */
-void imguiSetup() 
+
+void imguiSetup()
 {
 	ImGui_ImplGlfwGL3_NewFrame();
 

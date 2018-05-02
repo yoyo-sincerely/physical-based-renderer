@@ -217,11 +217,10 @@ int main(int, char**)
 	//gl init
 	gladLoadGL();
 
-    //glViewport(0, 0, WIDTH, HEIGHT);
-    //glEnable(GL_DEPTH_TEST);
-    //glDepthFunc(GL_LESS);
-    //glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
+    glViewport(0, 0, WIDTH, HEIGHT);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     // Setup ImGui binding
     ImGui::CreateContext();
@@ -773,6 +772,16 @@ void imguiTest()
 {
     ImGui_ImplGlfwGL3_NewFrame();
 
+	ImGui::Begin("test", &guiIsOpen);
+	ImGui::Text("ok");
+	ImGui::End();
+}
+
+/*
+void imguiTest()
+{
+    ImGui_ImplGlfwGL3_NewFrame();
+
     ImGui::Begin("GLEngine", &guiIsOpen, ImVec2(0, 0), 0.5f, ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoSavedSettings);
     ImGui::SetWindowSize(ImVec2(350, HEIGHT));
 
@@ -1059,6 +1068,7 @@ void imguiTest()
 
     ImGui::End();
 }
+*/
 void imguiSetup() 
 {
 	ImGui_ImplGlfwGL3_NewFrame();

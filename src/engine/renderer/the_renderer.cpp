@@ -102,6 +102,8 @@ static void ShowMenuFile()
 
 static void ShowLastImage() 
 {
+	if (g_Image.empty()) return;
+
 	g_Image_Index--;
 	g_Image_Index += g_Image.size(); 
 	g_Image_Index %= g_Image.size(); 
@@ -109,6 +111,8 @@ static void ShowLastImage()
 
 static void ShowNextImage()
 {
+	if (g_Image.empty()) return;
+
 	g_Image_Index++;
 	g_Image_Index %= g_Image.size();
 }

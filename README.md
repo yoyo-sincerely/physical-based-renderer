@@ -79,3 +79,6 @@ in 3rdpart file:
 - Image Loading : stb
 - Mesh Loading : Assimp
 
+## Credits
+
+Joshua Senouf

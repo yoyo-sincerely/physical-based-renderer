@@ -10,16 +10,16 @@
 
 namespace PBR {
 
-	class Shader
-	{
-	public:
-		GLuint Program;
+    class Shader
+    {
+    public:
+        GLuint Program;
 
-		Shader();
-		~Shader();
-		void setShader(const GLchar* vertexPath, const GLchar* fragmentPath);
-		void useShader();
-	};
+        Shader();
+        ~Shader();
+        void setShader(const GLchar* vertexPath, const GLchar* fragmentPath);
+        void useShader();
+    };
 
 }
 #endif

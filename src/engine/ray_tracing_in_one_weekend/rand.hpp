@@ -10,7 +10,7 @@
   
 inline double drand48(void)  
 {  
-	static unsigned long long seed = 1;  
+    static unsigned long long seed = 1;  
     seed = (a_rand * seed + c_rand) & 0xFFFFFFFFFFFFLL;  
     unsigned int x = seed >> 16;  
     return  ((double)x / (double)m_rand);  
@@ -19,7 +19,7 @@ inline double drand48(void)
   
 inline void srand48(unsigned int i)  
 {  
-	static unsigned long long seed = 1;  
+    static unsigned long long seed = 1;  
     seed  = (((long long int)i) << 16) | rand();  
 }  
   

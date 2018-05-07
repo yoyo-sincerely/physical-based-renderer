@@ -1,5 +1,5 @@
 #pragma once
-#include "Math.h"
+#include "math.h"
 
 namespace RayTracing{
 struct Vector3

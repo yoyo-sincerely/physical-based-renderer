@@ -1,4 +1,4 @@
-#include "RayTracer.h"
+#include "ray_tracer.h"
 
 #include <ppl.h>
 using namespace concurrency;
@@ -22,7 +22,6 @@ Color Shade(const Shape* thing, const Vector& pos, const Vector& norm, const Vec
             if (illum > 0)
             {
                 auto lcolor = light.Color;
-                lcolor *= illum;
                 lcolor *= thing->Material.Diffuse(pos);
                 ret += lcolor;
             }

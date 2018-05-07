@@ -19,7 +19,7 @@
 #else
 #include <stdint.h>         // intptr_t
 #endif
-#include "stb_image.h"		//loading image
+#include "stb_image.h"        //loading image
 #include "logger.h"
 #include "../../engine/ray_tracing/RayTracer.h"
 #include "../../engine/ray_tracing_in_one_weekend/ray_tracing.h"

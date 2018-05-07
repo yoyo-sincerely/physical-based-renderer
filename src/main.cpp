@@ -192,30 +192,30 @@ int main(int, char**)
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	GLFWmonitor *monitor = glfwGetPrimaryMonitor();
-	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+    GLFWmonitor *monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 #if __APPLE__
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 
 #if FULL_SCREEN
-	glfwWindowHint(GLFW_RED_BITS, mode->redBits);
-	glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
-	glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
-	glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-	WIDTH = mode->width;
-	HEIGHT = mode->height;
+    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+    WIDTH = mode->width;
+    HEIGHT = mode->height;
     GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "Awesome Renderer", monitor, NULL);
 #else
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Awesome Renderer", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Awesome Renderer", NULL, NULL);
 #endif
 
     glfwMakeContextCurrent(window);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
     glfwSwapInterval(1); // Enable vsync
 
-	//gl init
-	gladLoadGL();
+    //gl init
+    gladLoadGL();
 
     glViewport(0, 0, WIDTH, HEIGHT);
     glEnable(GL_DEPTH_TEST);
@@ -226,9 +226,9 @@ int main(int, char**)
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-	//window callback
+    //window callback
     ImGui_ImplGlfwGL3_Init(window, true);
-	glfwSetKeyCallback(window, keyCallback);
+    glfwSetKeyCallback(window, keyCallback);
     glfwSetCursorPosCallback(window, mouseCallback);
     glfwSetMouseButtonCallback(window, mouseButtonCallback);
     glfwSetScrollCallback(window, scrollCallback);
@@ -239,12 +239,12 @@ int main(int, char**)
 
     ImVec4 clearColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-	std::cout << "Current Working Dir is : " + getCurrentWorkingDir() << std::endl;
+    std::cout << "Current Working Dir is : " + getCurrentWorkingDir() << std::endl;
 
-	//----------
-   	// Shader(s)
-   	//----------
-   	simpleShader.setShader("../resources/shaders/lighting/simple.vert", "../resources/shaders/lighting/simple.frag");
+    //----------
+       // Shader(s)
+       //----------
+       simpleShader.setShader("../resources/shaders/lighting/simple.vert", "../resources/shaders/lighting/simple.frag");
     gBufferShader.setShader("../resources/shaders/gBuffer.vert", "../resources/shaders/gBuffer.frag");
     latlongToCubeShader.setShader("../resources/shaders/latlongToCube.vert", "../resources/shaders/latlongToCube.frag");
     lightingBRDFShader.setShader("../resources/shaders/lighting/lightingBRDF.vert", "../resources/shaders/lighting/lightingBRDF.frag");
@@ -256,44 +256,44 @@ int main(int, char**)
     saoBlurShader.setShader("../resources/shaders/postprocess/sao.vert", "../resources/shaders/postprocess/saoBlur.frag");
 
 
-   	//-----------
-   	// Textures(s)
-   	//-----------
-   	objectAlbedo.setTexture("../resources/textures/pbr/rustediron/rustediron_albedo.png", "ironAlbedo", true);
-   	objectNormal.setTexture("../resources/textures/pbr/rustediron/rustediron_normal.png", "ironNormal", true);
-   	objectRoughness.setTexture("../resources/textures/pbr/rustediron/rustediron_roughness.png", "ironRoughness", true);
-   	objectMetalness.setTexture("../resources/textures/pbr/rustediron/rustediron_metalness.png", "ironMetalness", true);
-   	objectAO.setTexture("../resources/textures/pbr/rustediron/rustediron_ao.png", "ironAO", true);
+       //-----------
+       // Textures(s)
+       //-----------
+       objectAlbedo.setTexture("../resources/textures/pbr/rustediron/rustediron_albedo.png", "ironAlbedo", true);
+       objectNormal.setTexture("../resources/textures/pbr/rustediron/rustediron_normal.png", "ironNormal", true);
+       objectRoughness.setTexture("../resources/textures/pbr/rustediron/rustediron_roughness.png", "ironRoughness", true);
+       objectMetalness.setTexture("../resources/textures/pbr/rustediron/rustediron_metalness.png", "ironMetalness", true);
+       objectAO.setTexture("../resources/textures/pbr/rustediron/rustediron_ao.png", "ironAO", true);
 
-   	//envMapHDR.setTextureHDR("../resources/textures/hdr/appart.hdr", "appartHDR", true);
-   	envMapHDR.setTextureHDR("../resources/textures/hdr/circus.hdr", "circusHDR", true);
+       //envMapHDR.setTextureHDR("../resources/textures/hdr/appart.hdr", "appartHDR", true);
+       envMapHDR.setTextureHDR("../resources/textures/hdr/circus.hdr", "circusHDR", true);
 
 
-   	envMapCube.setTextureCube(512, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
-   	envMapIrradiance.setTextureCube(32, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR);
-   	envMapPrefilter.setTextureCube(128, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
-   	envMapPrefilter.computeTexMipmap();
-   	envMapLUT.setTextureHDR(512, 512, GL_RG, GL_RG16F, GL_FLOAT, GL_LINEAR);
+       envMapCube.setTextureCube(512, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
+       envMapIrradiance.setTextureCube(32, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR);
+       envMapPrefilter.setTextureCube(128, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
+       envMapPrefilter.computeTexMipmap();
+       envMapLUT.setTextureHDR(512, 512, GL_RG, GL_RG16F, GL_FLOAT, GL_LINEAR);
 
-   	//---------
-   	// Model(s)
-   	//---------
-   	objectModel.loadModel("../resources/models/shaderball/shaderball.obj");
+       //---------
+       // Model(s)
+       //---------
+       objectModel.loadModel("../resources/models/shaderball/shaderball.obj");
 
-   	//---------------
-   	// Shape(s)
-   	//---------------
-   	envCubeRender.setShape("cube", glm::vec3(0.0f));
-   	quadRender.setShape("quad", glm::vec3(0.0f));
+       //---------------
+       // Shape(s)
+       //---------------
+       envCubeRender.setShape("cube", glm::vec3(0.0f));
+       quadRender.setShape("quad", glm::vec3(0.0f));
 
-   	//----------------
-   	// Light source(s)
-   	//----------------
-   	lightPoint1.setLight(lightPointPosition1, glm::vec4(lightPointColor1, 1.0f), lightPointRadius1, true);
-   	lightPoint2.setLight(lightPointPosition2, glm::vec4(lightPointColor2, 1.0f), lightPointRadius2, true);
-   	lightPoint3.setLight(lightPointPosition3, glm::vec4(lightPointColor3, 1.0f), lightPointRadius3, true);
+       //----------------
+       // Light source(s)
+       //----------------
+       lightPoint1.setLight(lightPointPosition1, glm::vec4(lightPointColor1, 1.0f), lightPointRadius1, true);
+       lightPoint2.setLight(lightPointPosition2, glm::vec4(lightPointColor2, 1.0f), lightPointRadius2, true);
+       lightPoint3.setLight(lightPointPosition3, glm::vec4(lightPointColor3, 1.0f), lightPointRadius3, true);
 
-   	lightDirectional1.setLight(lightDirectionalDirection1, glm::vec4(lightDirectionalColor1, 1.0f));
+       lightDirectional1.setLight(lightDirectionalDirection1, glm::vec4(lightDirectionalColor1, 1.0f));
 
 
     //---------------------------------------------------------
@@ -326,7 +326,7 @@ int main(int, char**)
 
     prefilterIBLShader.useShader();
     glUniform1i(glGetUniformLocation(prefilterIBLShader.Program, "envMap"), 0);
-	
+    
     //---------------
     // G-Buffer setup
     //---------------
@@ -370,29 +370,29 @@ int main(int, char**)
     glGenQueries(2, queryIDForward);
     glGenQueries(2, queryIDGUI);
 
-	glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     // Main loop
     while (!glfwWindowShouldClose(window))
     {
-		GLfloat currentFrame = glfwGetTime();
+        GLfloat currentFrame = glfwGetTime();
         deltaTime = currentFrame - lastFrame;
         lastFrame = currentFrame;
 
-		glfwPollEvents();
-		cameraMove();
+        glfwPollEvents();
+        cameraMove();
 
-		//setting
-		imguiSetup();
-		//imguiTest();
+        //setting
+        imguiSetup();
+        //imguiTest();
 
-		//------------------------
+        //------------------------
         // Geometry Pass rendering
         //------------------------
         glQueryCounter(queryIDGeometry[0], GL_TIMESTAMP);
         glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-			
-		// Camera setting
+            
+        // Camera setting
         glm::mat4 projection = glm::perspective(camera.cameraFOV, (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model;
@@ -400,23 +400,23 @@ int main(int, char**)
         // Model(s) rendering
         gBufferShader.useShader();
 
-		glUniformMatrix4fv(glGetUniformLocation(gBufferShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+        glUniformMatrix4fv(glGetUniformLocation(gBufferShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
         glUniformMatrix4fv(glGetUniformLocation(gBufferShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-		GLfloat rotationAngle = glfwGetTime() / 5.0f * modelRotationSpeed;
+        GLfloat rotationAngle = glfwGetTime() / 5.0f * modelRotationSpeed;
         model = glm::mat4();
         model = glm::translate(model, modelPosition);
         model = glm::rotate(model, rotationAngle, modelRotationAxis);
         model = glm::scale(model, modelScale);
 
-		projViewModel = projection * view * model;
+        projViewModel = projection * view * model;
 
-		glUniformMatrix4fv(glGetUniformLocation(gBufferShader.Program, "projViewModel"), 1, GL_FALSE, glm::value_ptr(projViewModel));
+        glUniformMatrix4fv(glGetUniformLocation(gBufferShader.Program, "projViewModel"), 1, GL_FALSE, glm::value_ptr(projViewModel));
         glUniformMatrix4fv(glGetUniformLocation(gBufferShader.Program, "prevProjViewModel"), 1, GL_FALSE, glm::value_ptr(prevProjViewModel));
         glUniformMatrix4fv(glGetUniformLocation(gBufferShader.Program, "model"), 1, GL_FALSE, glm::value_ptr(model));
         glUniform3f(glGetUniformLocation(gBufferShader.Program, "albedoColor"), albedoColor.r, albedoColor.g, albedoColor.b);
 
-		glActiveTexture(GL_TEXTURE0);
+        glActiveTexture(GL_TEXTURE0);
         objectAlbedo.useTexture();
         glUniform1i(glGetUniformLocation(gBufferShader.Program, "texAlbedo"), 0);
         glActiveTexture(GL_TEXTURE1);
@@ -434,19 +434,19 @@ int main(int, char**)
 
         objectModel.Draw();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glQueryCounter(queryIDGeometry[1], GL_TIMESTAMP);
 
         prevProjViewModel = projViewModel;
-		
-		//---------------
+        
+        //---------------
         // sao rendering
         //---------------
         glQueryCounter(queryIDSAO[0], GL_TIMESTAMP);
         glBindFramebuffer(GL_FRAMEBUFFER, saoFBO);
         glClear(GL_COLOR_BUFFER_BIT);
 
-		if (saoMode)
+        if (saoMode)
         {
             // SAO noisy texture
             saoShader.useShader();
@@ -482,10 +482,10 @@ int main(int, char**)
             quadRender.drawShape();
         }
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glQueryCounter(queryIDSAO[1], GL_TIMESTAMP);
 
-		//------------------------
+        //------------------------
         // Lighting Pass rendering
         //------------------------
         glQueryCounter(queryIDLighting[0], GL_TIMESTAMP);
@@ -523,7 +523,7 @@ int main(int, char**)
         lightPoint2.setLightRadius(lightPointRadius2);
         lightPoint3.setLightRadius(lightPointRadius3);
 
-		for (int i = 0; i < Light::lightPointList.size(); i++)
+        for (int i = 0; i < Light::lightPointList.size(); i++)
         {
             Light::lightPointList[i].renderToShader(lightingBRDFShader, camera);
         }
@@ -549,9 +549,9 @@ int main(int, char**)
         glUniform1i(glGetUniformLocation(lightingBRDFShader.Program, "iblMode"), iblMode);
         glUniform1i(glGetUniformLocation(lightingBRDFShader.Program, "attenuationMode"), attenuationMode);
 
-		quadRender.drawShape();
+        quadRender.drawShape();
 
-		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+        glBindFramebuffer(GL_FRAMEBUFFER, 0);
         glQueryCounter(queryIDLighting[1], GL_TIMESTAMP);
 
 
@@ -585,7 +585,7 @@ int main(int, char**)
 
         glQueryCounter(queryIDPostprocess[1], GL_TIMESTAMP);
 
-		//-----------------------
+        //-----------------------
         // Forward Pass rendering
         //-----------------------
         glQueryCounter(queryIDForward[0], GL_TIMESTAMP);
@@ -596,7 +596,7 @@ int main(int, char**)
         glBlitFramebuffer(0, 0, WIDTH, HEIGHT, 0, 0, WIDTH, HEIGHT, GL_DEPTH_BUFFER_BIT, GL_NEAREST);
         glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-		// Shape(s) rendering
+        // Shape(s) rendering
         if (pointMode)
         {
             simpleShader.useShader();
@@ -613,15 +613,15 @@ int main(int, char**)
         }
         glQueryCounter(queryIDForward[1], GL_TIMESTAMP);
 
-		//----------------
+        //----------------
         // ImGui rendering
         //----------------
         glQueryCounter(queryIDGUI[0], GL_TIMESTAMP);
-		ImGui::Render();
-		ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
+        ImGui::Render();
+        ImGui_ImplGlfwGL3_RenderDrawData(ImGui::GetDrawData());
         glQueryCounter(queryIDGUI[1], GL_TIMESTAMP);
 
-		//--------------
+        //--------------
         // GPU profiling
         //--------------
         GLint stopGeometryTimerAvailable = 0;
@@ -762,38 +762,38 @@ void scrollCallback(GLFWwindow* window, double xoffset, double yoffset)
 
 void imguiSetup()
 {
-	int settingWidth = 380, settingHeight = HEIGHT;
+    int settingWidth = 380, settingHeight = HEIGHT;
     ImGui_ImplGlfwGL3_NewFrame();
 
-	if (ImGui::BeginMainMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Edit"))
-		{
-			if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-			if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-			ImGui::Separator();
-			if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-			if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-			if (ImGui::MenuItem("Paste", "CTRL+V")) {}
-			ImGui::EndMenu();
-		}
-		if (ImGui::BeginMenu("Windows"))
-		{
-			ImGui::MenuItem("Demo", NULL, &showDemoWindow);
-			ImGui::MenuItem("Renderer", NULL, &showRendererWindow);
-			//ImGui::MenuItem("Attribute", NULL, &show_inspector_window);
-			ImGui::EndMenu();
-		}
-		ImGui::EndMainMenuBar();
-	}
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Edit"))
+        {
+            if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+            if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+            ImGui::Separator();
+            if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+            if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+            if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+            ImGui::EndMenu();
+        }
+        if (ImGui::BeginMenu("Windows"))
+        {
+            ImGui::MenuItem("Demo", NULL, &showDemoWindow);
+            ImGui::MenuItem("Renderer", NULL, &showRendererWindow);
+            //ImGui::MenuItem("Attribute", NULL, &show_inspector_window);
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
+    }
 
-	ImGui::Begin("Awesome Renderer", &guiIsOpen, ImVec2(0, 0), 0.5f, ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoSavedSettings);
+    ImGui::Begin("Awesome Renderer", &guiIsOpen, ImVec2(0, 0), 0.5f, ImGuiWindowFlags_AlwaysUseWindowPadding | ImGuiWindowFlags_NoSavedSettings);
     ImGui::SetWindowSize(ImVec2(settingWidth, settingHeight));
-	ImGui::SetWindowPos(ImVec2(0, 20));
+    ImGui::SetWindowPos(ImVec2(0, 20));
 
     if (ImGui::CollapsingHeader("Rendering", 0, true, true))
     {
@@ -1077,10 +1077,10 @@ void imguiSetup()
         ImGui::ShowDemoWindow(&showDemoWindow);
     }
 
-	if (showRendererWindow) 
-	{
-		ShowRendererWindow(&showRendererWindow);
-	}
+    if (showRendererWindow) 
+    {
+        ShowRendererWindow(&showRendererWindow);
+    }
 
     ImGui::End();
 
@@ -1088,34 +1088,34 @@ void imguiSetup()
 
 void imguiTest()
 {
-	ImGui_ImplGlfwGL3_NewFrame();
+    ImGui_ImplGlfwGL3_NewFrame();
 
-	if (ImGui::BeginMainMenuBar())
-	{
-		if (ImGui::BeginMenu("File"))
-		{
-			ImGui::EndMenu();
-		}
-		//if (ImGui::BeginMenu("Edit"))
-		//{
-		//	if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
-		//	if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
-		//	ImGui::Separator();
-		//	if (ImGui::MenuItem("Cut", "CTRL+X")) {}
-		//	if (ImGui::MenuItem("Copy", "CTRL+C")) {}
-		//	if (ImGui::MenuItem("Paste", "CTRL+V")) {}
-		//	ImGui::EndMenu();
-		//}
-		if (ImGui::BeginMenu("Windows"))
-		{
-			ImGui::MenuItem("Demo", NULL, &showDemoWindow);
-			ImGui::MenuItem("Renderer", NULL, &showRendererWindow);
-			//ImGui::MenuItem("Attribute", NULL, &show_inspector_window);
-			ImGui::EndMenu();
-		}
-		ImGui::EndMainMenuBar();
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            ImGui::EndMenu();
+        }
+        //if (ImGui::BeginMenu("Edit"))
+        //{
+        //    if (ImGui::MenuItem("Undo", "CTRL+Z")) {}
+        //    if (ImGui::MenuItem("Redo", "CTRL+Y", false, false)) {}  // Disabled item
+        //    ImGui::Separator();
+        //    if (ImGui::MenuItem("Cut", "CTRL+X")) {}
+        //    if (ImGui::MenuItem("Copy", "CTRL+C")) {}
+        //    if (ImGui::MenuItem("Paste", "CTRL+V")) {}
+        //    ImGui::EndMenu();
+        //}
+        if (ImGui::BeginMenu("Windows"))
+        {
+            ImGui::MenuItem("Demo", NULL, &showDemoWindow);
+            ImGui::MenuItem("Renderer", NULL, &showRendererWindow);
+            //ImGui::MenuItem("Attribute", NULL, &show_inspector_window);
+            ImGui::EndMenu();
+        }
+        ImGui::EndMainMenuBar();
 
-	}
+    }
 
     if (showDemoWindow)
     {
@@ -1123,12 +1123,12 @@ void imguiTest()
         ImGui::ShowDemoWindow(&showDemoWindow);
     }
 
-	if (showRendererWindow) 
-	{
-		ShowRendererWindow(&showRendererWindow);
-	}
+    if (showRendererWindow) 
+    {
+        ShowRendererWindow(&showRendererWindow);
+    }
 
-	//ImGui::End();
+    //ImGui::End();
 }
 
 void cameraMove() 
@@ -1145,8 +1145,8 @@ void cameraMove()
 
 void gBufferSetup()
 {
-	glGenFramebuffers(1, &gBuffer);
-	glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+    glGenFramebuffers(1, &gBuffer);
+    glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
 
     // Position
     glGenTextures(1, &gPosition);
@@ -1186,22 +1186,22 @@ void gBufferSetup()
     GLuint attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
     glDrawBuffers(4, attachments);
 
-	// Z-Buffer
-	glGenRenderbuffers(1, &zBuffer);
-	glBindRenderbuffer(GL_RENDERBUFFER, zBuffer);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIDTH, HEIGHT);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, zBuffer);
+    // Z-Buffer
+    glGenRenderbuffers(1, &zBuffer);
+    glBindRenderbuffer(GL_RENDERBUFFER, zBuffer);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WIDTH, HEIGHT);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, zBuffer);
 
-	//check if the framebuffer is complete before continue
-	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-	{
-		std::cout << "Frame buffer is not completed !" << std::endl;
-	}
+    //check if the framebuffer is complete before continue
+    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    {
+        std::cout << "Frame buffer is not completed !" << std::endl;
+    }
 }
 
 void saoSetup()
 {
-	// SAO Buffer
+    // SAO Buffer
     glGenFramebuffers(1, &saoFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, saoFBO);
     glGenTextures(1, &saoBuffer);
@@ -1232,7 +1232,7 @@ void saoSetup()
 
 void postprocessSetup()
 {
-	// Post-processing Buffer
+    // Post-processing Buffer
     glGenFramebuffers(1, &postprocessFBO);
     glBindFramebuffer(GL_FRAMEBUFFER, postprocessFBO);
 
@@ -1249,7 +1249,7 @@ void postprocessSetup()
 
 void iblSetup()
 {
-	// Latlong to Cubemap conversion
+    // Latlong to Cubemap conversion
     glGenFramebuffers(1, &envToCubeFBO);
     glGenRenderbuffers(1, &envToCubeRBO);
     glBindFramebuffer(GL_FRAMEBUFFER, envToCubeFBO);

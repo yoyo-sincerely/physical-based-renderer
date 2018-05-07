@@ -17,14 +17,14 @@ inline auto max(const L& l, const R& r) -> decltype(l>r ? l : r) { return l>r ? 
 template<typename Tr, typename Tmin, typename Tmax>
 Tr clamp(const Tr& value, const Tmin& min, const Tmax& max)
 {
-	if (value > max)
-		return max;
-	if (value < min)
-		return min;
-	return value;
+    if (value > max)
+        return max;
+    if (value < min)
+        return min;
+    return value;
 }
 
 inline bool is_zero(double value)
 {
-	return value < 1E-10 && value > -1E-10;
+    return value < 1E-10 && value > -1E-10;
 }

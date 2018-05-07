@@ -19,18 +19,18 @@
 
 namespace PBR {
 
-	class Skybox
-	{
-	public:
-		GLfloat cameraAperture, cameraShutterSpeed, cameraISO;
-		Texture texSkybox;
+    class Skybox
+    {
+    public:
+        GLfloat cameraAperture, cameraShutterSpeed, cameraISO;
+        Texture texSkybox;
 
-		Skybox();
-		~Skybox();
-		void setSkyboxTexture(const char* texPath);
-		void renderToShader(Shader& shaderSkybox, glm::mat4& projection, glm::mat4& view);
-		void setExposure(GLfloat aperture, GLfloat shutterSpeed, GLfloat iso);
-	};
+        Skybox();
+        ~Skybox();
+        void setSkyboxTexture(const char* texPath);
+        void renderToShader(Shader& shaderSkybox, glm::mat4& projection, glm::mat4& view);
+        void setExposure(GLfloat aperture, GLfloat shutterSpeed, GLfloat iso);
+    };
 }
 
 #endif

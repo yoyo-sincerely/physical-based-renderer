@@ -14,19 +14,19 @@
 
 namespace PBR {
 
-	class Material
-	{
-	public:
-		GLuint matID;
-		Shader matShader;
-		std::vector<std::tuple<std::string, Texture>> texList;
+    class Material
+    {
+    public:
+        GLuint matID;
+        Shader matShader;
+        std::vector<std::tuple<std::string, Texture>> texList;
 
-		Material();
-		~Material();
-		void addTexture(std::string uniformName, Texture texObj);
-		void setShader(Shader& shader);
-		void renderToShader();
-	};
+        Material();
+        ~Material();
+        void addTexture(std::string uniformName, Texture texObj);
+        void setShader(Shader& shader);
+        void renderToShader();
+    };
 
 }
 #endif

@@ -98,6 +98,7 @@ static void ShowMenuFile()
     if (ImGui::MenuItem("render test"))                RenderTest();
     if (ImGui::MenuItem("render"))                    Render();
     if (ImGui::MenuItem("ray tracing in weekend"))    raytracing();
+	if (ImGui::MenuItem("photon mapping"))				PhotonMapRender();
 }
 
 static void ShowLastImage() 
@@ -140,15 +141,14 @@ static void raytracing()
 static void RenderTest()
 {
     ImFontAtlas * testBuffer = new ImFontAtlas;
-    testBuffer->TexWidth = 100;
-    testBuffer->TexHeight = 100;
+    testBuffer->TexWidth = 512;
+    testBuffer->TexHeight = 512;
 
     testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight + 1);
     for (int i = 0; i < testBuffer->TexHeight; i++)
     {
         auto prt = (unsigned int *)((char *)testBuffer->TexPixelsRGBA32 + i * sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth);
         //g_Logger.AddLog("sizeof prt is : %d", sizeof(*prt));
-        g_Logger.AddLog("texPixelrgba size is : %d\n", sizeof(*testBuffer->TexPixelsRGBA32));
         for (int j = 0; j < testBuffer->TexWidth; j++ , prt++)
         {
             double r = 1;
@@ -165,7 +165,37 @@ static void RenderTest()
     LoadingImageRGBA(testBuffer);
 }
 
-//test render
+static void PhotonMapRender()
+{
+    ImFontAtlas * testBuffer = new ImFontAtlas;
+    testBuffer->TexWidth = 512;
+    testBuffer->TexHeight = 512;
+
+
+    testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight + 1);
+
+	PhotonMapping::photonMapping(testBuffer->TexPixelsRGBA32, testBuffer->TexWidth, testBuffer->TexHeight);
+
+    //for (int i = 0; i < testBuffer->TexHeight; i++)
+    //{
+    //    auto prt = (unsigned int *)((char *)testBuffer->TexPixelsRGBA32 + i * sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth);
+    //    for (int j = 0; j < testBuffer->TexWidth; j++ , prt++)
+    //    {
+    //        double r = 1;
+    //        double g = 0;
+    //        double b = 0;
+    //        *prt = ((255 & 255) << 24) | //alpha
+    //            (((int)(b * 255) & 255) << 16) | //blue
+    //            (((int)(g * 255) & 255) << 8) | //green
+    //            (((int)(r * 255) & 255) << 0); //red
+    //        //g_Logger.AddLog("prt size is : %d\t value is : %d \t%d\t%d\n", sizeof(*prt), *prt, i, j);
+    //        //g_Logger.AddLog("rgb is : %d %d %d \n", (((int)(r * 255) & 0xFF) << 0), (((int)(g * 255) & 0xFF) << 8), (((int)(b * 255) & 0xFF) << 16));
+    //    }
+    //}
+
+    LoadingImageRGBA(testBuffer);
+}
+
 static void Render()
 {
     //init

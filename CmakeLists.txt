@@ -28,13 +28,11 @@ set_output_paths()
 add_subdirectory_ex(3rdpart)
 
 include_directories(
+src/engine/photon_mapping/
 src/engine/real_time_pbr/camera/
 src/engine/real_time_pbr/lighting/
 src/engine/real_time_pbr/mesh/
 src/engine/real_time_pbr/resources/
-# src/engine/ray_tracing/
-# src/engine/ray_tracing_in_one_weekend/
-# src/engine/renderer/
 src/editor/core/
 src/editor/mesh/
 3rdpart/glad/include/
@@ -91,6 +89,16 @@ resources/shaders/postprocess/*.frag
 resources/shaders/postprocess/*.vert
 )
 
+FILE(GLOB OFFLINE_PBR
+src/engine/offline_pbr/camera/*.h
+src/engine/offline_pbr/camera/*.cpp
+)
+
+FILE(GLOB PHOTON_MAPPING
+src/engine/photon_mapping/*.h
+src/engine/photon_mapping/*.cpp
+)
+
 FILE(GLOB PROJECT_CONFIGS
 CmakeLists.txt
 .gitignore
@@ -105,8 +113,12 @@ source_group("Headers" FILES ${PROJECT_HEAD})
 source_group("Sources" FILES ${PROJECT_SOURCES})
 source_group("RealtimePBR" FILES ${REAL_TIME_PBR})
 source_group("Shaders" FILES ${PROJECT_SHADERS})
+source_group("OfflinePBR" FILES ${OFFLINE_PBR})
+source_group("PhotonMapping" FILES ${PHOTON_MAPPING})
 
 add_executable(AwesomeRenderer
+${PHOTON_MAPPING}
+${OFFLINE_PBR}
 ${PROJECT_CONFIGS}
 ${PROJECT_HEAD}
 ${PROJECT_SOURCES}

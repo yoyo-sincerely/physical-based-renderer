@@ -21,8 +21,9 @@
 #endif
 #include "stb_image.h"        //loading image
 #include "logger.h"
-#include "../../engine/ray_tracing/RayTracer.h"
+#include "../../engine/ray_tracing/ray_tracer.h"
 #include "../../engine/ray_tracing_in_one_weekend/ray_tracing.h"
+#include "../../engine/photon_mapping/photon_mapping.h"
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4996) // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen
@@ -74,6 +75,7 @@ static void LoadingImage(const char * imagePath);
 static void ShowImage();
 //static void ShowImage(ImTextureID);
 static void RenderTest();
+static void PhotonMapRender();
 void ShowRendererWindow(bool * p_open);
 static void ShowMenuFile();
 

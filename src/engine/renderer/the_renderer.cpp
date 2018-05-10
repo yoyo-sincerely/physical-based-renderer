@@ -15,15 +15,16 @@ using namespace std;
 #if !defined(IMGUI_DISABLE_RENDERER_WINDOWS)
 
 
-RayTracing::Scene                            scene;
-RayTracing::RayTracer*                        tracer = nullptr;
-ExampleAppLog                    g_Logger;
-static bool                        g_ShowLogger = true;
-static bool                        g_IsLoadImage = false;
-static GLuint                    g_FontTexture = 0;
-static ImVector<ImFontAtlas *>    g_Image;
-static bool                        g_ShowImage = true;
-unsigned int                    g_Image_Index = 0;
+RayTracing::Scene						scene;
+RayTracing::RayTracer*					tracer;
+ExampleAppLog						    g_Logger;
+static GLuint							g_FontTexture = 0;
+static ImVector<ImFontAtlas *>			g_Image;
+static bool								g_ShowImage = true;
+static bool								g_IsLoadImage = false;
+static bool								g_ShowLogger = true;
+unsigned int							g_Image_Index = 0;
+unsigned int							samples = 1;
 
 void ShowRendererWindow(bool* p_open)
 {
@@ -92,13 +93,13 @@ void ShowRendererWindow(bool* p_open)
 
 static void ShowMenuFile() 
 {
-    if (ImGui::MenuItem("show log"))                g_ShowLogger = true;
+    if (ImGui::MenuItem("show log"))				g_ShowLogger = true;
     if (ImGui::MenuItem("show/close image"))        g_ShowImage ^= 1;
     ImGui::Separator();
-    if (ImGui::MenuItem("render test"))                RenderTest();
-    if (ImGui::MenuItem("render"))                    Render();
-    if (ImGui::MenuItem("ray tracing in weekend"))    raytracing();
-	if (ImGui::MenuItem("photon mapping"))				PhotonMapRender();
+    if (ImGui::MenuItem("render test"))				RenderTest();
+    if (ImGui::MenuItem("render"))					Render();
+    if (ImGui::MenuItem("ray tracing in weekend"))	raytracing();
+	if (ImGui::MenuItem("photon mapping"))			PhotonMapRender();
 }
 
 static void ShowLastImage() 
@@ -133,7 +134,6 @@ static void raytracing()
         int g = color / 256 % 256;
         int b = color / (256 * 256) % 256;
         int a = color / (256 * 256 * 256) % 256;
-        //g_Logger.AddLog("r : %d, g : %d, b : %d, a : %d, i : %d \n", r, g, b, a, i);
     }
     LoadingImageRGBA(testBuffer);
 }
@@ -144,11 +144,10 @@ static void RenderTest()
     testBuffer->TexWidth = 512;
     testBuffer->TexHeight = 512;
 
-    testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight + 1);
+    testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight);
     for (int i = 0; i < testBuffer->TexHeight; i++)
     {
         auto prt = (unsigned int *)((char *)testBuffer->TexPixelsRGBA32 + i * sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth);
-        //g_Logger.AddLog("sizeof prt is : %d", sizeof(*prt));
         for (int j = 0; j < testBuffer->TexWidth; j++ , prt++)
         {
             double r = 1;
@@ -158,8 +157,6 @@ static void RenderTest()
                 (((int)(b * 255) & 255) << 16) | //blue
                 (((int)(g * 255) & 255) << 8) | //green
                 (((int)(r * 255) & 255) << 0); //red
-            //g_Logger.AddLog("prt size is : %d\t value is : %d \t%d\t%d\n", sizeof(*prt), *prt, i, j);
-            //g_Logger.AddLog("rgb is : %d %d %d \n", (((int)(r * 255) & 0xFF) << 0), (((int)(g * 255) & 0xFF) << 8), (((int)(b * 255) & 0xFF) << 16));
         }
     }
     LoadingImageRGBA(testBuffer);
@@ -171,42 +168,22 @@ static void PhotonMapRender()
     testBuffer->TexWidth = 512;
     testBuffer->TexHeight = 512;
 
+    testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight);
 
-    testBuffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth * testBuffer->TexHeight + 1);
-
-	PhotonMapping::photonMapping(testBuffer->TexPixelsRGBA32, testBuffer->TexWidth, testBuffer->TexHeight);
-
-    //for (int i = 0; i < testBuffer->TexHeight; i++)
-    //{
-    //    auto prt = (unsigned int *)((char *)testBuffer->TexPixelsRGBA32 + i * sizeof(*testBuffer->TexPixelsRGBA32) * testBuffer->TexWidth);
-    //    for (int j = 0; j < testBuffer->TexWidth; j++ , prt++)
-    //    {
-    //        double r = 1;
-    //        double g = 0;
-    //        double b = 0;
-    //        *prt = ((255 & 255) << 24) | //alpha
-    //            (((int)(b * 255) & 255) << 16) | //blue
-    //            (((int)(g * 255) & 255) << 8) | //green
-    //            (((int)(r * 255) & 255) << 0); //red
-    //        //g_Logger.AddLog("prt size is : %d\t value is : %d \t%d\t%d\n", sizeof(*prt), *prt, i, j);
-    //        //g_Logger.AddLog("rgb is : %d %d %d \n", (((int)(r * 255) & 0xFF) << 0), (((int)(g * 255) & 0xFF) << 8), (((int)(b * 255) & 0xFF) << 16));
-    //    }
-    //}
+	samples *= 10;
+	PhotonMapping::photonMapping(testBuffer->TexPixelsRGBA32, testBuffer->TexWidth, testBuffer->TexHeight, samples);
 
     LoadingImageRGBA(testBuffer);
 }
 
 static void Render()
 {
-    //init
     SetDefaultScene(&scene);
     tracer = new RayTracing::RayTracer(&scene);
     ImFontAtlas * buffer = new ImFontAtlas;
     buffer->TexWidth = 800;
     buffer->TexHeight = 600;
     buffer->TexPixelsRGBA32 = (unsigned int *)malloc(sizeof(*buffer->TexPixelsRGBA32) * buffer->TexWidth * buffer->TexHeight);
-    //memset(buffer->TexPixelsRGBA32, 0, sizeof(buffer->TexPixelsRGBA32) * buffer->TexWidth * buffer->TexHeight);
-    //g_Logger.AddLog("TexPixelsRGBA32 is %d \n", sizeof(buffer->TexPixelsRGBA32));
 
     tracer->Render(buffer->TexPixelsRGBA32, buffer->TexWidth, buffer->TexHeight, sizeof(*buffer->TexPixelsRGBA32) * buffer->TexWidth, 5);
 
@@ -227,7 +204,6 @@ static void LoadingImage(const char * imagePath)
     buffer->TexPixelsAlpha8 = stbi_load(imagePath, &width, &height, &nrChannels, 0);
     buffer->TexWidth = width;
     buffer->TexHeight = height;
-    g_Logger.AddLog("[Loading Image] image width is : %d, image height is : %d, length is : %d\n", width, height, strlen((char *)buffer->TexPixelsAlpha8));
     LoadingImageRGB(buffer);
 }
 
@@ -253,7 +229,6 @@ static void LoadingImageRGBA(ImFontAtlas * texImAtlas)
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texImAtlas->TexWidth, texImAtlas->TexHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, texImAtlas->TexPixelsRGBA32); 
 
     // Store our identifier
-    //g_Logger.AddLog("texture id %d\n", g_FontTexture);
     texImAtlas->TexID = (void *)(intptr_t)g_FontTexture;
     g_Image.push_back(texImAtlas);
     g_Image_Index = g_Image.size() - 1;
@@ -284,12 +259,10 @@ static void LoadingImageRGB(ImFontAtlas * texImAtlas)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, texImAtlas->TexWidth, texImAtlas->TexHeight, 0, GL_RGB, GL_UNSIGNED_BYTE, texImAtlas->TexPixelsAlpha8);
 
     // Store our identifier
-    //g_Logger.AddLog("texture id %d\n", g_FontTexture);
     texImAtlas->TexID = (void *)(intptr_t)g_FontTexture;
     g_Image.push_back(texImAtlas);
     g_Image_Index = g_Image.size() - 1;
 
-    //g_Logger.AddLog("g_Image's length is : %d ", g_Image.size());
     // Restore state
     glBindTexture(GL_TEXTURE_2D, last_texture);
 }
@@ -298,7 +271,6 @@ static void ShowImage()
 {
     if (g_Image.empty()) return;
     if (g_FontTexture == NULL) return;
-    //g_Logger.AddLog("g_Image_Index is : %d\n", g_Image_Index);
     if (g_Image_Index < 0 || g_Image_Index >= g_Image.size())
     {
         g_Logger.AddLog("g_Image_Index is NULL !!!");
@@ -308,7 +280,6 @@ static void ShowImage()
     ImFontAtlas * tex = g_Image[g_Image_Index];
     if (tex != NULL) {
         ImGui::Image(tex->TexID, ImVec2((float)tex->TexWidth, (float)tex->TexHeight));
-        //g_Logger.AddLog("the texID is  %d  ", tex->TexID);
     }else {
         g_Logger.AddLog("tex is NULL!!! \n");
     }

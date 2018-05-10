@@ -23,7 +23,8 @@
 
 
 namespace PhotonMapping {
-	void photonMapping(unsigned int * data, int width, int height);
+	void photonMapping(unsigned int * data, int width, int height, int samples);
+
 	std::string getCurrentWorkingDir(void);
 
 	inline double clamp(double i);

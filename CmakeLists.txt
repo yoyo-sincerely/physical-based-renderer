@@ -15,6 +15,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${AwesomeRenderer_SOURCE_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_DEBUG "${AwesomeRenderer_SOURCE_DIR}/Debug")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY_RELEASE "${AwesomeRenderer_SOURCE_DIR}/Release")
 
 include(macros)
 include(modules/sanitizers_support)
@@ -48,32 +51,6 @@ FILE(GLOB API_SOURCES
 3rdpart/imgui/*.cpp
 )
 
-FILE(GLOB PROJECT_HEAD
-src/engine/renderer/the_renderer.h
-src/engine/ray_tracing/*.h
-src/engine/ray_tracing_in_one_weekend/*.h*
-src/editor/mesh/*.h
-src/editor/core/*.h
-)
-
-FILE(GLOB PROJECT_SOURCES
-src/engine/ray_tracing/*.cpp
-src/engine/ray_tracing_in_one_weekend/*.cpp
-src/engine/renderer/the_renderer.cpp
-)
-
-FILE(GLOB REAL_TIME_PBR
-src/engine/real_time_pbr/camera/*.h
-src/engine/real_time_pbr/mesh/*.h
-src/engine/real_time_pbr/lighting/*.h
-src/engine/real_time_pbr/resources/*.h
-
-src/engine/real_time_pbr/camera/*.cpp
-src/engine/real_time_pbr/lighting/*.cpp
-src/engine/real_time_pbr/mesh/*.cpp
-src/engine/real_time_pbr/resources/*.cpp
-)
-
 file(GLOB PROJECT_SHADERS 
 resources/shaders/*.glsl
 resources/shaders/*.frag
@@ -89,16 +66,6 @@ resources/shaders/postprocess/*.frag
 resources/shaders/postprocess/*.vert
 )
 
-FILE(GLOB OFFLINE_PBR
-src/engine/offline_pbr/camera/*.h
-src/engine/offline_pbr/camera/*.cpp
-)
-
-FILE(GLOB PHOTON_MAPPING
-src/engine/photon_mapping/*.h
-src/engine/photon_mapping/*.cpp
-)
-
 FILE(GLOB PROJECT_CONFIGS
 CmakeLists.txt
 .gitignore
@@ -109,29 +76,34 @@ LICENSE
 )
 
 source_group("API" FILES ${API_SOURCES})
-source_group("Headers" FILES ${PROJECT_HEAD})
-source_group("Sources" FILES ${PROJECT_SOURCES})
-source_group("RealtimePBR" FILES ${REAL_TIME_PBR})
 source_group("Shaders" FILES ${PROJECT_SHADERS})
-source_group("OfflinePBR" FILES ${OFFLINE_PBR})
-source_group("PhotonMapping" FILES ${PHOTON_MAPPING})
+
+file(GLOB_RECURSE project_headers src/*.h*)
+file(GLOB_RECURSE project_cpps src/*.cpp)
+file(GLOB_RECURSE project_cs src/*.c)
+
+set(all_files ${project_headers} ${project_cpps} ${project_cs})
+source_group_by_dir(all_files)
+
+file(GLOB_RECURSE thirdparty_headers 3rdpart/*.h)
+file(GLOB_RECURSE thirdparty_cpps 3rdpart/*.cpp)
+file(GLOB_RECURSE thirdparty_cs 3rdpart/*.c)
+set(thirdparty_files ${thirdparty_headers} ${thirdparty_cpps} ${thirdparty_cs})
 
 add_executable(AwesomeRenderer
-${PHOTON_MAPPING}
-${OFFLINE_PBR}
-${PROJECT_CONFIGS}
-${PROJECT_HEAD}
-${PROJECT_SOURCES}
+${all_files}
 ${API_SOURCES}
-${REAL_TIME_PBR}
 ${PROJECT_SHADERS}
+${PROJECT_CONFIGS}
 src/main.cpp
 )
 
 target_link_libraries(${PROJECT_NAME} glfw)
 target_link_libraries(${PROJECT_NAME} assimp)
 
-add_definitions(-DGLFW_INCLUDE_NONE
+add_definitions(
+	-DGLFW_INCLUDE_NONE
 	-DWINDOWS
-    -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\")
+    -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"
+	)
 link_directories(${AwesomeRenderer_SOURCE_DIR})

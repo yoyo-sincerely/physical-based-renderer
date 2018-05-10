@@ -38,6 +38,8 @@
 [Bb]uild/
 [Bb]uild64/
 [Bb]in/
+Debug/
+Release/
 .vs/
 .vscode/
 *_i.c

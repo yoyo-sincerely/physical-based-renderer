@@ -224,13 +224,12 @@ namespace PhotonMapping {
 				if (halton(d3 + 1, i) < p)
 					trace(Ray(x, d), dpt, m, mul(f, fl)*(1. / p), mul(f, adj), i);
 			}
-
 		}
 		else if (obj.type == MaterialType::Mirror)
 		{
 			trace(Ray(x, reflect(r.dir, n)), dpt, m, mul(f, fl), mul(f, adj), i);
 		}
-		else
+		else if (obj.type == MaterialType::Glass)
 		{
 			Ray lr(x, reflect(r.dir, n));
 			auto into = dot(n, nl) > 0.0;
@@ -359,9 +358,8 @@ namespace PhotonMapping {
 	//-------------------------------------------------------------------------------------------
 	//		It is the main entry point
 	//-------------------------------------------------------------------------------------------
-	void photonMapping(unsigned int *data, int width, int height) 
+	void photonMapping(unsigned int *data, int width, int height, int samples) 
 	{
-	    auto samples = 10;     
 	    auto c = new Vector3[ width * height ];
 	
 	    hpbbox.reset();
@@ -369,8 +367,6 @@ namespace PhotonMapping {
 	    trace_ray( width, height );
 	    trace_photon( samples );
 	    density_estimation( c, samples );
-	
-	    //save_to_bmp( "image.bmp", w, h, &c[0].x, 2.2 );
 	
 		for (int i = 0; i < height; i++)
 		{
@@ -389,6 +385,13 @@ namespace PhotonMapping {
 
 	    delete [] c;
 	    c = nullptr;
+
+		for (auto ptr = hash_grid.begin(); ptr != hash_grid.end(); ptr++)
+		{
+			ptr->clear();
+		}
+		hash_grid.clear();
+		hitpoints.clear();
 	}
 
 	std::string getCurrentWorkingDir(void) {

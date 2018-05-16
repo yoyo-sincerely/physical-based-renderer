@@ -244,7 +244,7 @@ int main(int, char**)
     //----------
        // Shader(s)
        //----------
-       simpleShader.setShader("../resources/shaders/lighting/simple.vert", "../resources/shaders/lighting/simple.frag");
+    simpleShader.setShader("../resources/shaders/lighting/simple.vert", "../resources/shaders/lighting/simple.frag");
     gBufferShader.setShader("../resources/shaders/gBuffer.vert", "../resources/shaders/gBuffer.frag");
     latlongToCubeShader.setShader("../resources/shaders/latlongToCube.vert", "../resources/shaders/latlongToCube.frag");
     lightingBRDFShader.setShader("../resources/shaders/lighting/lightingBRDF.vert", "../resources/shaders/lighting/lightingBRDF.frag");
@@ -256,44 +256,44 @@ int main(int, char**)
     saoBlurShader.setShader("../resources/shaders/postprocess/sao.vert", "../resources/shaders/postprocess/saoBlur.frag");
 
 
-       //-----------
-       // Textures(s)
-       //-----------
-       objectAlbedo.setTexture("../resources/textures/pbr/rustediron/rustediron_albedo.png", "ironAlbedo", true);
-       objectNormal.setTexture("../resources/textures/pbr/rustediron/rustediron_normal.png", "ironNormal", true);
-       objectRoughness.setTexture("../resources/textures/pbr/rustediron/rustediron_roughness.png", "ironRoughness", true);
-       objectMetalness.setTexture("../resources/textures/pbr/rustediron/rustediron_metalness.png", "ironMetalness", true);
-       objectAO.setTexture("../resources/textures/pbr/rustediron/rustediron_ao.png", "ironAO", true);
+    //-----------
+    // Textures(s)
+    //-----------
+    objectAlbedo.setTexture("../resources/textures/pbr/rustediron/rustediron_albedo.png", "ironAlbedo", true);
+    objectNormal.setTexture("../resources/textures/pbr/rustediron/rustediron_normal.png", "ironNormal", true);
+    objectRoughness.setTexture("../resources/textures/pbr/rustediron/rustediron_roughness.png", "ironRoughness", true);
+    objectMetalness.setTexture("../resources/textures/pbr/rustediron/rustediron_metalness.png", "ironMetalness", true);
+    objectAO.setTexture("../resources/textures/pbr/rustediron/rustediron_ao.png", "ironAO", true);
 
-       //envMapHDR.setTextureHDR("../resources/textures/hdr/appart.hdr", "appartHDR", true);
-       envMapHDR.setTextureHDR("../resources/textures/hdr/circus.hdr", "circusHDR", true);
+    //envMapHDR.setTextureHDR("../resources/textures/hdr/appart.hdr", "appartHDR", true);
+    envMapHDR.setTextureHDR("../resources/textures/hdr/circus.hdr", "circusHDR", true);
 
 
-       envMapCube.setTextureCube(512, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
-       envMapIrradiance.setTextureCube(32, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR);
-       envMapPrefilter.setTextureCube(128, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
-       envMapPrefilter.computeTexMipmap();
-       envMapLUT.setTextureHDR(512, 512, GL_RG, GL_RG16F, GL_FLOAT, GL_LINEAR);
+    envMapCube.setTextureCube(512, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
+    envMapIrradiance.setTextureCube(32, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR);
+    envMapPrefilter.setTextureCube(128, GL_RGB, GL_RGB16F, GL_FLOAT, GL_LINEAR_MIPMAP_LINEAR);
+    envMapPrefilter.computeTexMipmap();
+    envMapLUT.setTextureHDR(512, 512, GL_RG, GL_RG16F, GL_FLOAT, GL_LINEAR);
 
-       //---------
-       // Model(s)
-       //---------
-       objectModel.loadModel("../resources/models/shaderball/shaderball.obj");
+    //---------
+    // Model(s)
+    //---------
+    objectModel.loadModel("../resources/models/shaderball/shaderball.obj");
 
-       //---------------
-       // Shape(s)
-       //---------------
-       envCubeRender.setShape("cube", glm::vec3(0.0f));
-       quadRender.setShape("quad", glm::vec3(0.0f));
+    //---------------
+    // Shape(s)
+    //---------------
+    envCubeRender.setShape("cube", glm::vec3(0.0f));
+    quadRender.setShape("quad", glm::vec3(0.0f));
 
-       //----------------
-       // Light source(s)
-       //----------------
-       lightPoint1.setLight(lightPointPosition1, glm::vec4(lightPointColor1, 1.0f), lightPointRadius1, true);
-       lightPoint2.setLight(lightPointPosition2, glm::vec4(lightPointColor2, 1.0f), lightPointRadius2, true);
-       lightPoint3.setLight(lightPointPosition3, glm::vec4(lightPointColor3, 1.0f), lightPointRadius3, true);
+    //----------------
+    // Light source(s)
+    //----------------
+    lightPoint1.setLight(lightPointPosition1, glm::vec4(lightPointColor1, 1.0f), lightPointRadius1, true);
+    lightPoint2.setLight(lightPointPosition2, glm::vec4(lightPointColor2, 1.0f), lightPointRadius2, true);
+    lightPoint3.setLight(lightPointPosition3, glm::vec4(lightPointColor3, 1.0f), lightPointRadius3, true);
 
-       lightDirectional1.setLight(lightDirectionalDirection1, glm::vec4(lightDirectionalColor1, 1.0f));
+    lightDirectional1.setLight(lightDirectionalDirection1, glm::vec4(lightDirectionalColor1, 1.0f));
 
 
     //---------------------------------------------------------

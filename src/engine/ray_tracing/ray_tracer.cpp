@@ -127,8 +127,6 @@ void RayTracer::Render(void* buffer, int width, int height, int stride, int maxd
             ray.MaxDistance = INFINITY;
             if (*prt == NULL)
             {
-                //g_Logger.AddLog("prt is null !!!");
-                printf("prt is null !!!");
                 return;
             }
             *prt = Trace(ray, *scene, maxdepth).ToArgb();

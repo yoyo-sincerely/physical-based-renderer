@@ -18,11 +18,11 @@ using namespace std;
 RayTracing::Scene						scene;
 RayTracing::RayTracer*					tracer;
 ExampleAppLog						    g_Logger;
-static GLuint							g_FontTexture = 0;
-static ImVector<ImFontAtlas *>			g_Image;
-static bool								g_ShowImage = true;
-static bool								g_IsLoadImage = false;
-static bool								g_ShowLogger = true;
+GLuint		        					g_FontTexture = 0;
+ImVector<ImFontAtlas *>	        		g_Image;
+bool						    		g_ShowImage = true;
+bool						    		g_IsLoadImage = false;
+bool						    		g_ShowLogger = true;
 unsigned int							g_Image_Index = 0;
 unsigned int							samples = 1;
 
@@ -91,7 +91,7 @@ void ShowRendererWindow(bool* p_open)
     ImGui::End();
 }
 
-static void ShowMenuFile() 
+void ShowMenuFile() 
 {
     if (ImGui::MenuItem("show log"))				g_ShowLogger = true;
     if (ImGui::MenuItem("show/close image"))        g_ShowImage ^= 1;
@@ -102,7 +102,7 @@ static void ShowMenuFile()
 	if (ImGui::MenuItem("photon mapping"))			PhotonMapRender();
 }
 
-static void ShowLastImage() 
+void ShowLastImage() 
 {
     if (g_Image.empty()) return;
 
@@ -111,7 +111,7 @@ static void ShowLastImage()
     g_Image_Index %= g_Image.size(); 
 }
 
-static void ShowNextImage()
+void ShowNextImage()
 {
     if (g_Image.empty()) return;
 
@@ -119,7 +119,7 @@ static void ShowNextImage()
     g_Image_Index %= g_Image.size();
 }
 
-static void raytracing()
+void raytracing()
 {    ImFontAtlas * testBuffer = new ImFontAtlas;
     testBuffer->TexWidth = 400;
     testBuffer->TexHeight = 400;
@@ -138,7 +138,19 @@ static void raytracing()
     LoadingImageRGBA(testBuffer);
 }
 
-static void RenderTest()
+void Raytracing()
+{
+    std::unique_ptr<App> currentApplication = make_unique<App>();
+    RayTracer rayTracer(std::move(currentApplication));
+
+    Timer timer("Ray Tracer");
+
+    rayTracer.Run();
+    
+    timer.Tock();
+}
+
+void RenderTest()
 {
     ImFontAtlas * testBuffer = new ImFontAtlas;
     testBuffer->TexWidth = 512;
@@ -162,7 +174,7 @@ static void RenderTest()
     LoadingImageRGBA(testBuffer);
 }
 
-static void PhotonMapRender()
+void PhotonMapRender()
 {
     ImFontAtlas * testBuffer = new ImFontAtlas;
     testBuffer->TexWidth = 512;
@@ -176,7 +188,7 @@ static void PhotonMapRender()
     LoadingImageRGBA(testBuffer);
 }
 
-static void Render()
+void Render()
 {
     SetDefaultScene(&scene);
     tracer = new RayTracing::RayTracer(&scene);
@@ -191,12 +203,12 @@ static void Render()
 }
 
 // Demonstrate creating a simple log window with basic filtering.
-static void ShowLogger(bool* p_open)
+void ShowLogger(bool* p_open)
 {
     g_Logger.Draw("Render Logger", p_open);
 }
 
-static void LoadingImage(const char * imagePath)
+void LoadingImage(const char * imagePath)
 {
     //ImDrawList drawList;
     int width, height, nrChannels;
@@ -207,7 +219,7 @@ static void LoadingImage(const char * imagePath)
     LoadingImageRGB(buffer);
 }
 
-static void LoadingImageRGBA(ImFontAtlas * texImAtlas)
+void LoadingImageRGBA(ImFontAtlas * texImAtlas)
 {
     if (texImAtlas->TexPixelsRGBA32 == NULL && texImAtlas->TexPixelsAlpha8 == NULL) {
         g_Logger.AddLog("data is NULL");
@@ -237,7 +249,7 @@ static void LoadingImageRGBA(ImFontAtlas * texImAtlas)
     glBindTexture(GL_TEXTURE_2D, last_texture);
 }
 
-static void LoadingImageRGB(ImFontAtlas * texImAtlas)
+void LoadingImageRGB(ImFontAtlas * texImAtlas)
 {
     // Build texture atlas
     //ImDrawList drawList;
@@ -267,7 +279,7 @@ static void LoadingImageRGB(ImFontAtlas * texImAtlas)
     glBindTexture(GL_TEXTURE_2D, last_texture);
 }
 
-static void ShowImage() 
+void ShowImage() 
 {
     if (g_Image.empty()) return;
     if (g_FontTexture == NULL) return;

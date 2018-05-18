@@ -30,7 +30,18 @@ set_output_paths()
 
 add_subdirectory_ex(3rdpart)
 
+# FreeImage Header
+if (WIN32)
+include_directories("./3rdpart/freeimage/distrib/windows/${EX_PLATFORM_NAME}")
+elseif (APPLE)
+include_directories("./3rdpart/freeimage/distrib/osx")
+else()
+find_package(FreeImage REQUIRED)
+include_directories(${FREEIMAGE_INCLUDE_DIRS})
+endif()
+
 include_directories(
+src/engine/
 src/engine/photon_mapping/
 src/engine/real_time_pbr/camera/
 src/engine/real_time_pbr/lighting/
@@ -38,12 +49,15 @@ src/engine/real_time_pbr/mesh/
 src/engine/real_time_pbr/resources/
 src/editor/core/
 src/editor/mesh/
+
+3rdpart/
 3rdpart/glad/include/
 3rdpart/assimp/assimp/include/
 3rdpart/glfw/include/
 3rdpart/glm/
 3rdpart/stb/
 3rdpart/imgui/
+3rdpart/libkdtree/
 )
 
 FILE(GLOB API_SOURCES 
@@ -105,5 +119,6 @@ add_definitions(
 	-DGLFW_INCLUDE_NONE
 	-DWINDOWS
     -DPROJECT_SOURCE_DIR=\"${PROJECT_SOURCE_DIR}\"
+    -DASSET_PATH=\"${PROJECT_SOURCE_DIR}/resources\"
 	)
 link_directories(${AwesomeRenderer_SOURCE_DIR})

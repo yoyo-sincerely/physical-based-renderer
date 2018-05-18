@@ -21,9 +21,12 @@
 #endif
 #include "stb_image.h"        //loading image
 #include "logger.h"
-#include "../../engine/ray_tracing/ray_tracer.h"
-#include "../../engine/ray_tracing_in_one_weekend/ray_tracing.h"
-#include "../../engine/photon_mapping/photon_mapping.h"
+
+#include "ray_tracing/ray_tracer.h"
+#include "ray_tracing_in_one_weekend/ray_tracing.h"
+#include "photon_mapping/photon_mapping.h"
+#include "common/RayTracer.h"
+#include "app.h"
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4996) // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen
@@ -68,22 +71,21 @@
 #if !defined(IMGUI_DISABLE_RENDERER_WINDOWS)
 
 void Render();
-static void ShowLogger(bool* p_open);
-static void LoadingImageRGB(ImFontAtlas * texImAtlas);
-static void LoadingImageRGBA(ImFontAtlas * texImAtlas);
-static void LoadingImage(const char * imagePath);
-static void ShowImage();
-//static void ShowImage(ImTextureID);
-static void RenderTest();
-static void PhotonMapRender();
 void ShowRendererWindow(bool * p_open);
-static void ShowMenuFile();
 
-static void ShowLastImage();
-
-static void ShowNextImage();
-
-static void raytracing();
+void ShowLogger(bool* p_open);
+void LoadingImageRGB(ImFontAtlas * texImAtlas);
+void LoadingImageRGBA(ImFontAtlas * texImAtlas);
+void LoadingImage(const char * imagePath);
+void ShowImage();
+// void ShowImage(ImTextureID);
+void RenderTest();
+void PhotonMapRender();
+void ShowMenuFile();
+void ShowLastImage();
+void ShowNextImage();
+void raytracing();
+void Raytracing();
 #else
 
 #endif

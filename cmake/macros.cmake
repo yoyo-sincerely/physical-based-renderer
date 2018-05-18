@@ -9,6 +9,19 @@ macro(detect_platform)
 		set(LINUX TRUE)
 	endif()
 
+	# Check system
+	if( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+	MESSAGE(STATUS "64 bits compiler detected" )
+	SET( EX_PLATFORM 64 )
+	SET( EX_PLATFORM_NAME "x64" )
+	SET( EX_PLATFORM_STR "64" )
+	else( CMAKE_SIZEOF_VOID_P EQUAL 8 ) 
+	MESSAGE(STATUS "32 bits compiler detected" )
+	SET( EX_PLATFORM 32 )
+	SET( EX_PLATFORM_NAME "x86" )
+	SET( EX_PLATFORM_STR "32" )
+	endif( CMAKE_SIZEOF_VOID_P EQUAL 8 )
+
 	# if(NOT LINUX) should work, too, if you need that
 	if(LINUX)
 		message(STATUS "OS >>> Linux")

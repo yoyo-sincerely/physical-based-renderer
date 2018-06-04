@@ -25,13 +25,17 @@
 #include "ray_tracing/ray_tracer.h"
 #include "ray_tracing_in_one_weekend/ray_tracing.h"
 #include "photon_mapping/photon_mapping.h"
+
+#ifdef APPLICATION
 #include "common/RayTracer.h"
 #include "app.h"
+#endif
 
 #ifdef _MSC_VER
 #pragma warning (disable: 4996) // 'This function or variable may be unsafe': strcpy, strdup, sprintf, vsnprintf, sscanf, fopen
 #define snprintf _snprintf
 #endif
+
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wold-style-cast"             // warning : use of old-style cast                              // yes, they are more terse.
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"    // warning : 'xx' is deprecated: The POSIX name for this item.. // for strdup used in demo code (so user can copy & paste the code)

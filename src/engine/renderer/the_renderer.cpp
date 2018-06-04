@@ -140,6 +140,7 @@ void raytracing()
 
 void Raytracing()
 {
+#ifdef APPLICATION
     std::unique_ptr<App> currentApplication = make_unique<App>();
     RayTracer rayTracer(std::move(currentApplication));
 
@@ -148,6 +149,7 @@ void Raytracing()
     rayTracer.Run();
     
     timer.Tock();
+#endif
 }
 
 void RenderTest()

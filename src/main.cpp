@@ -31,9 +31,8 @@
 #define GetCurrentDir getcwd
 #endif
 
-using namespace PBR;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 4.0f));
+PBR::Camera camera(glm::vec3(0.0f, 0.0f, 4.0f));
 
 bool showDemoWindow = false;
 bool showRendererWindow = false;
@@ -125,39 +124,39 @@ glm::mat4 envMapView[] =
     glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
 };
 
-Shader gBufferShader;
-Shader latlongToCubeShader;
-Shader simpleShader;
-Shader lightingBRDFShader;
-Shader irradianceIBLShader;
-Shader prefilterIBLShader;
-Shader integrateIBLShader;
-Shader firstpassPPShader;
-Shader saoShader;
-Shader saoBlurShader;
+PBR::Shader gBufferShader;
+PBR::Shader latlongToCubeShader;
+PBR::Shader simpleShader;
+PBR::Shader lightingBRDFShader;
+PBR::Shader irradianceIBLShader;
+PBR::Shader prefilterIBLShader;
+PBR::Shader integrateIBLShader;
+PBR::Shader firstpassPPShader;
+PBR::Shader saoShader;
+PBR::Shader saoBlurShader;
 
-Texture objectAlbedo;
-Texture objectNormal;
-Texture objectRoughness;
-Texture objectMetalness;
-Texture objectAO;
-Texture envMapHDR;
-Texture envMapCube;
-Texture envMapIrradiance;
-Texture envMapPrefilter;
-Texture envMapLUT;
+PBR::Texture objectAlbedo;
+PBR::Texture objectNormal;
+PBR::Texture objectRoughness;
+PBR::Texture objectMetalness;
+PBR::Texture objectAO;
+PBR::Texture envMapHDR;
+PBR::Texture envMapCube;
+PBR::Texture envMapIrradiance;
+PBR::Texture envMapPrefilter;
+PBR::Texture envMapLUT;
 
-Material pbrMat;
+PBR::Material pbrMat;
 
-Model objectModel;
+PBR::Model objectModel;
 
-Light lightPoint1;
-Light lightPoint2;
-Light lightPoint3;
-Light lightDirectional1;
+PBR::Light lightPoint1;
+PBR::Light lightPoint2;
+PBR::Light lightPoint3;
+PBR::Light lightDirectional1;
 
-Shape quadRender;
-Shape envCubeRender;
+PBR::Shape quadRender;
+PBR::Shape envCubeRender;
 
 //---------------
 // GLFW Callbacks
@@ -242,8 +241,8 @@ int main(int, char**)
     std::cout << "Current Working Dir is : " + getCurrentWorkingDir() << std::endl;
 
     //----------
-       // Shader(s)
-       //----------
+    // Shader(s)
+    //----------
     simpleShader.setShader("../resources/shaders/lighting/simple.vert", "../resources/shaders/lighting/simple.frag");
     gBufferShader.setShader("../resources/shaders/gBuffer.vert", "../resources/shaders/gBuffer.frag");
     latlongToCubeShader.setShader("../resources/shaders/latlongToCube.vert", "../resources/shaders/latlongToCube.frag");
@@ -419,15 +418,19 @@ int main(int, char**)
         glActiveTexture(GL_TEXTURE0);
         objectAlbedo.useTexture();
         glUniform1i(glGetUniformLocation(gBufferShader.Program, "texAlbedo"), 0);
+
         glActiveTexture(GL_TEXTURE1);
         objectNormal.useTexture();
         glUniform1i(glGetUniformLocation(gBufferShader.Program, "texNormal"), 1);
+
         glActiveTexture(GL_TEXTURE2);
         objectRoughness.useTexture();
         glUniform1i(glGetUniformLocation(gBufferShader.Program, "texRoughness"), 2);
+
         glActiveTexture(GL_TEXTURE3);
         objectMetalness.useTexture();
         glUniform1i(glGetUniformLocation(gBufferShader.Program, "texMetalness"), 3);
+
         glActiveTexture(GL_TEXTURE4);
         objectAO.useTexture();
         glUniform1i(glGetUniformLocation(gBufferShader.Program, "texAO"), 4);
@@ -523,17 +526,17 @@ int main(int, char**)
         lightPoint2.setLightRadius(lightPointRadius2);
         lightPoint3.setLightRadius(lightPointRadius3);
 
-        for (int i = 0; i < Light::lightPointList.size(); i++)
+        for (int i = 0; i < PBR::Light::lightPointList.size(); i++)
         {
-            Light::lightPointList[i].renderToShader(lightingBRDFShader, camera);
+            PBR::Light::lightPointList[i].renderToShader(lightingBRDFShader, camera);
         }
 
         lightDirectional1.setLightDirection(lightDirectionalDirection1);
         lightDirectional1.setLightColor(glm::vec4(lightDirectionalColor1, 1.0f));
 
-        for (int i = 0; i < Light::lightDirectionalList.size(); i++)
+        for (int i = 0; i < PBR::Light::lightDirectionalList.size(); i++)
         {
-            Light::lightDirectionalList[i].renderToShader(lightingBRDFShader, camera);
+            PBR::Light::lightDirectionalList[i].renderToShader(lightingBRDFShader, camera);
         }
 
         glUniformMatrix4fv(glGetUniformLocation(lightingBRDFShader.Program, "inverseView"), 1, GL_FALSE, glm::value_ptr(glm::transpose(view)));
@@ -603,12 +606,12 @@ int main(int, char**)
             glUniformMatrix4fv(glGetUniformLocation(simpleShader.Program, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
             glUniformMatrix4fv(glGetUniformLocation(simpleShader.Program, "view"), 1, GL_FALSE, glm::value_ptr(view));
 
-            for (int i = 0; i < Light::lightPointList.size(); i++)
+            for (int i = 0; i < PBR::Light::lightPointList.size(); i++)
             {
-                glUniform4f(glGetUniformLocation(simpleShader.Program, "lightColor"), Light::lightPointList[i].getLightColor().r, Light::lightPointList[i].getLightColor().g, Light::lightPointList[i].getLightColor().b, Light::lightPointList[i].getLightColor().a);
+                glUniform4f(glGetUniformLocation(simpleShader.Program, "lightColor"), PBR::Light::lightPointList[i].getLightColor().r, PBR::Light::lightPointList[i].getLightColor().g, PBR::Light::lightPointList[i].getLightColor().b, PBR::Light::lightPointList[i].getLightColor().a);
 
-                if (Light::lightPointList[i].isMesh())
-                    Light::lightPointList[i].lightMesh.drawShape(simpleShader, view, projection, camera);
+                if (PBR::Light::lightPointList[i].isMesh())
+                    PBR::Light::lightPointList[i].lightMesh.drawShape(simpleShader, view, projection, camera);
             }
         }
         glQueryCounter(queryIDForward[1], GL_TIMESTAMP);
@@ -1004,6 +1007,14 @@ void imguiSetup()
                     modelScale = glm::vec3(0.1f);
                 }
 
+                if (ImGui::Button("Connel Box"))
+                {
+                    objectModel.~Model();
+                    objectModel.loadModel("../resources/CornellBox/CornellBox-Water.obj");
+                    //objectModel.loadModel("../resources/CornellBox/CornellBox-Mirror.obj");
+                    modelScale = glm::vec3(0.1f);
+                }
+
                 ImGui::TreePop();
             }
 
@@ -1041,10 +1052,8 @@ void imguiSetup()
 
                     materialF0 = glm::vec3(0.04f);
                 }
-
                 ImGui::TreePop();
             }
-
             ImGui::TreePop();
         }
     }
@@ -1134,13 +1143,13 @@ void imguiTest()
 void cameraMove() 
 {
     if (keys[GLFW_KEY_W])
-        camera.keyboardCall(FORWARD, deltaTime);
+        camera.keyboardCall(PBR::FORWARD, deltaTime);
     if (keys[GLFW_KEY_S])
-        camera.keyboardCall(BACKWARD, deltaTime);
+        camera.keyboardCall(PBR::BACKWARD, deltaTime);
     if (keys[GLFW_KEY_A])
-        camera.keyboardCall(LEFT, deltaTime);
+        camera.keyboardCall(PBR::LEFT, deltaTime);
     if (keys[GLFW_KEY_D])
-        camera.keyboardCall(RIGHT, deltaTime);
+        camera.keyboardCall(PBR::RIGHT, deltaTime);
 }
 
 void gBufferSetup()

@@ -31,10 +31,6 @@ cmake -G "Visual Studio 15 2017 Win64" ..
 | RT1 | Albedo.R | Albedo.G | Albedo.B | Roughness |
 | RT2 | Normal.R | Normal.G | Normal.B | Matelness | 
 | RT3 | AO | Velocity.R | Velocity.G | 
- 
-
-## How To Use
-
 
 
 ## Features
@@ -81,4 +77,6 @@ in 3rdpart file:
 
 ## Credits
 
-Joshua Senouf
+- cs 148
+- learnopenGL
+- Joshua Senouf

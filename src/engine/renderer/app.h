@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef APPLICATION
 #include "common/Application.h"
 
 class App : public Application
@@ -15,3 +16,5 @@ public:
     virtual int GetMaxRefractionBounces() const override;
     virtual glm::vec2 GetImageOutputResolution() const override;
 };
+
+#endif

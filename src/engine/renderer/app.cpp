@@ -1,4 +1,5 @@
 
+#ifdef APPLICATION
 #include "app.h"
 #include "common/core.h"
 
@@ -22,7 +23,8 @@ std::shared_ptr<Scene> App::CreateScene() const
 
     //objects
     std::vector<std::shared_ptr<aiMaterial>> loadedMaterials;
-    std::vector<std::shared_ptr<MeshObject>> cubeObjects = MeshLoader::LoadMesh("CornellBox/CornellBox-Original.obj", &loadedMaterials);
+    //std::vector<std::shared_ptr<MeshObject>> cubeObjects = MeshLoader::LoadMesh("CornellBox/CornellBox-Original.obj", &loadedMaterials);
+    std::vector<std::shared_ptr<MeshObject>> cubeObjects = MeshLoader::LoadMesh("models/teapot/teapot.obj", &loadedMaterials);
     for (size_t i = 0; i < cubeObjects.size(); i++)
     {
         std::shared_ptr<Material> materialCopy = cubeMaterial->Clone();
@@ -88,4 +90,4 @@ glm::vec2 App::GetImageOutputResolution() const
 {
     return glm::vec2(640.f, 480.f);
 }
-
+#endif

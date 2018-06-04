@@ -1,0 +1,24 @@
+var searchData=
+[
+  ['g',['G',['../struct_ray_tracing_1_1_color.html#a9fa749302662d989762f38e364462cd7',1,'RayTracing::Color']]],
+  ['g_5ffonttexture',['g_FontTexture',['../the__renderer_8cpp.html#a76694bfc1e27296421f914cfe8246635',1,'the_renderer.cpp']]],
+  ['g_5fimage',['g_Image',['../the__renderer_8cpp.html#a93d6765b228c2f56169c0102b24c1c48',1,'the_renderer.cpp']]],
+  ['g_5fimage_5findex',['g_Image_Index',['../the__renderer_8cpp.html#abb551becffaf8ddd2d1cbbd10553c703',1,'the_renderer.cpp']]],
+  ['g_5fisloadimage',['g_IsLoadImage',['../the__renderer_8cpp.html#a0b2fbe802eed38b1019caf2bcee724de',1,'the_renderer.cpp']]],
+  ['g_5flogger',['g_Logger',['../the__renderer_8cpp.html#afd916f44ea9717bdb2870f1d89c23c98',1,'the_renderer.cpp']]],
+  ['g_5fshowimage',['g_ShowImage',['../the__renderer_8cpp.html#aa6ee4c8691107a3af7bddf95ed02caef',1,'the_renderer.cpp']]],
+  ['g_5fshowlogger',['g_ShowLogger',['../the__renderer_8cpp.html#ac760f0629db060c4f65cbe76208cc8c1',1,'the_renderer.cpp']]],
+  ['galbedo',['gAlbedo',['../main_8cpp.html#a54d609ec3826936e4f665cd7ad320c3b',1,'main.cpp']]],
+  ['gamma',['gamma',['../namespace_photon_mapping.html#a5a3848eb526f958a32d6fcaf3e6678b1',1,'PhotonMapping']]],
+  ['gbuffer',['gBuffer',['../main_8cpp.html#a278db1b34d972165a6146489cfe863b0',1,'main.cpp']]],
+  ['gbuffershader',['gBufferShader',['../main_8cpp.html#a5dbd99b667892167f60c16c7c063d8bf',1,'main.cpp']]],
+  ['gbufferview',['gBufferView',['../main_8cpp.html#a57cac77fb80a88a4b0042c395b0ee789',1,'main.cpp']]],
+  ['geffects',['gEffects',['../main_8cpp.html#aa09527fd460a839a40bb2487fd3aa53c',1,'main.cpp']]],
+  ['gen',['gen',['../struct_sampler_state.html#a896412e125c960af0baa06de83e0fc1a',1,'SamplerState']]],
+  ['globalidcount',['globalIdCount',['../class_acceleration_node.html#a2dd6f1a02fa48e753d6fef803bea5450',1,'AccelerationNode']]],
+  ['gnormal',['gNormal',['../main_8cpp.html#a2b188d7025616c33f873e722df033998',1,'main.cpp']]],
+  ['gposition',['gPosition',['../main_8cpp.html#ab37b14c3da3606b39848f1bd628c776d',1,'main.cpp']]],
+  ['grid',['grid',['../class_voxel_grid.html#a1bdc193e867f702588c047e146bf9c95',1,'VoxelGrid']]],
+  ['gridsize',['gridSize',['../class_voxel_grid.html#a4d99398d251f306400bacfab23b6fd06',1,'VoxelGrid::gridSize()'],['../class_uniform_grid_acceleration.html#a1ac99cb88e967e675f38cbb5c03f60df',1,'UniformGridAcceleration::gridSize()'],['../class_jitter_color_sampler.html#ae7ce726d4e909fac5df58aa0ae60903e',1,'JitterColorSampler::gridSize()']]],
+  ['guiisopen',['guiIsOpen',['../main_8cpp.html#a643dda7a28e1b0a770be80f51d56c383',1,'main.cpp']]]
+];

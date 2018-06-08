@@ -112,4 +112,43 @@ namespace PBR {
 
         return Mesh(vertices, indices);
     }
+
+//    void Model::mergeModel(const Model &other, const glm::mat4x4 transform) {
+//        aiMesh ** new_meshes = new aiMesh*[scene->mNumMeshes + other.scene->mNumMeshes];
+//        memcpy(new_meshes, scene->mMeshes, scene->mNumMeshes * sizeof(aiMesh*));
+//        delete[] scene->mMeshes;
+//        scene->mMeshes = new_meshes;
+//        for (int i = 0, offset = scene->mNumMeshes; i < other.scene->mNumMeshes; i++, offset++) {
+//            aiMesh *mesh = other.scene->mMeshes[i];
+//            aiMesh *copy_mesh = scene->mMeshes[offset] = new aiMesh;
+
+//            copy_mesh->mNumVertices = mesh->mNumVertices;
+//            copy_mesh->mVertices = new aiVector3D[mesh->mNumVertices];
+//            copy_mesh->mPrimitiveTypes = mesh->mPrimitiveTypes;
+//            for (int j = 0; j < mesh->mNumVertices; j++) {
+//                glm::vec4 v(mesh->mVertices[j].x, mesh->mVertices[j].y, mesh->mVertices[j].z, 1);
+//                v = transform * v;
+//                copy_mesh->mVertices[j] = aiVector3D(v.x, v.y, v.z);
+//            }
+//            // copy_mesh->mMaterialIndex = mesh->mMaterialIndex; // FIXME
+//            copy_mesh->mName = mesh->mName;
+//            copy_mesh->mNumFaces = mesh->mNumFaces;
+//            if (mesh->mNormals) {
+//                copy_mesh->mNormals = new aiVector3D[mesh->mNumVertices];
+//                for (int j = 0; j < mesh->mNumVertices; j++) {
+//                    glm::vec4 v(mesh->mNormals[j].x, mesh->mNormals[j].y, mesh->mNormals[j].z, 0);
+//                    v = transform * v;
+//                    copy_mesh->mNormals[j] = aiVector3D(v.x, v.y, v.z);
+//                }
+//            }
+//            copy_mesh->mFaces = new aiFace[mesh->mNumFaces];
+//            for (int j = 0; j < mesh->mNumFaces; j++) {
+//                copy_mesh->mFaces[j].mNumIndices = mesh->mFaces[j].mNumIndices;
+//                copy_mesh->mFaces[j].mIndices = new unsigned[mesh->mFaces[j].mNumIndices];
+//                memcpy(copy_mesh->mFaces[j].mIndices, mesh->mFaces[j].mIndices,
+//                       mesh->mFaces[j].mNumIndices * sizeof(unsigned));
+//            }
+//        }
+//        scene->mNumMeshes += other.scene->mNumMeshes;
+//    }
 }

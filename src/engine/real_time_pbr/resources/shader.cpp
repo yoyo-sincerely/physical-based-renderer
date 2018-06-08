@@ -53,7 +53,7 @@ namespace PBR {
         }
 
         const GLchar* vShaderCode = vertexCode.c_str();
-        const GLchar * fShaderCode = fragmentCode.c_str();
+        const GLchar* fShaderCode = fragmentCode.c_str();
 
         // Shaders compilation
         GLuint vertex, fragment;

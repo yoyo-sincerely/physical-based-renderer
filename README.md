@@ -1,5 +1,6 @@
 # AwesomeRenderer
-!(https://github.com/yoyo-sincerely/physical-based-renderer/blob/master/model.png)[]
+![](https://github.com/yoyo-sincerely/physical-based-renderer/blob/master/model.png)
+
 run cmd commond 
 
 ```

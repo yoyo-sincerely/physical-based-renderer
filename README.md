@@ -81,4 +81,3 @@ in 3rdpart file:
 
 - cs 148
 - learnopenGL
-- Joshua Senouf

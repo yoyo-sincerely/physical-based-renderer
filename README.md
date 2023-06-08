@@ -1,6 +1,6 @@
 # AwesomeRenderer
-<!-- ![](https://github.com/yoyo-sincerely/physical-based-renderer/blob/master/model.png) -->
-<!-- ![](https://github.com/yoyo-sincerely/physical-based-renderer/blob/master/teapot.jpg) -->
+![](https://github.com/yoyo-sincerely/physical-based-renderer/blob/master/model.png)
+![](https://github.com/yoyo-sincerely/physical-based-renderer/blob/master/teapot.jpg) 
 
 run cmd commond 
 
